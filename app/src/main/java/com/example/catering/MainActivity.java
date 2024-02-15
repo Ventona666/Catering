@@ -1,29 +1,30 @@
 package com.example.catering;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
+import java.util.List;
+
+import Model.Restaurant;
+import Services.RestaurantService;
 
 public class MainActivity extends AppCompatActivity {
-
-    private ListView listItems;
-    private ArrayList<String> listRestaurants = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.home_page);
-        listItems = this.findViewById(R.id.list_item);
-
-        listRestaurants.add("Rest 1");
-        listRestaurants.add("Rest 2");
-        listRestaurants.add("Rest 3");
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listRestaurants);
-        listItems.setAdapter(adapter);
+        setContentView(R.layout.activity_main);
     }
 }
