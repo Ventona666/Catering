@@ -19,7 +19,6 @@ import Services.RestaurantService;
 
 public class HomeActivity extends AppCompatActivity {
 
-    private ListView listItems;
     private List<String> listeRestaurants = new ArrayList<>();
 
     @Override
@@ -27,14 +26,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_page);
         initRestaurantsList(this);
-
-
-        List<String> liste = new ArrayList<>();
-        liste.add("Rest 1");
-        liste.add("Rest 2");
-        liste.add("Rest 3");
-
-
     }
 
     private void initRestaurantsList(HomeActivity homeActivity){
