@@ -9,15 +9,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.catering.Model.Restaurant;
 import com.example.catering.R;
+import com.example.catering.Services.FirebaseService;
+import com.example.catering.Services.UtilsService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MapsRestaurantFragment extends Fragment {
+    private FirebaseService firebaseService = new FirebaseService();
+    private List<Restaurant> listeRestaurants = new ArrayList<>();
+    private UtilsService utilsService = new UtilsService();
+    private int latSum = 0;
+    private int lonSum = 0;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -31,10 +43,24 @@ public class MapsRestaurantFragment extends Fragment {
          * user has installed Google Play services and returned to the app.
          */
         @Override
-        public void onMapReady(GoogleMap googleMap) {
-            LatLng sydney = new LatLng(-34, 151);
-            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        public void onMapReady(@NonNull GoogleMap googleMap) {
+            firebaseService.findAllRestaurants(data -> {
+                listeRestaurants = data;
+
+                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(@NonNull Marker marker) {
+                        String title = marker.getTitle();
+                        Restaurant restaurant = listeRestaurants.stream().filter(r -> r.getNom().equals(title)).findFirst().get();
+                        if (getParentFragment() != null){
+                            utilsService.replaceFragment(getParentFragment().getParentFragmentManager(), new RestaurantDetailFragment(restaurant));
+                        }
+                        return true;
+                    }
+                });
+
+                initMarker(googleMap);
+            });
         }
     };
 
@@ -44,6 +70,17 @@ public class MapsRestaurantFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_maps_restaurant, container, false);
+    }
+
+    private void initMarker(GoogleMap googleMap){
+        for (int i = 0; i < listeRestaurants.size(); i++){
+            LatLng latLng = new LatLng(listeRestaurants.get(i).getLat(), listeRestaurants.get(i).getLon());
+            googleMap.addMarker(new MarkerOptions().position(latLng).title(listeRestaurants.get(i).getNom()));
+            latSum += (int) listeRestaurants.get(i).getLat();
+            lonSum += (int) listeRestaurants.get(i).getLon();
+        }
+        LatLng latLngMoy = new LatLng((double) latSum /listeRestaurants.size(), (double) lonSum / listeRestaurants.size());
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLngMoy));
     }
 
     @Override
