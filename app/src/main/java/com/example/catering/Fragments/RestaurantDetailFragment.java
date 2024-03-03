@@ -1,18 +1,32 @@
 package com.example.catering.Fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.catering.Common.DataCallBack;
+import com.example.catering.Model.Avis;
+import com.example.catering.Model.AvisView;
 import com.example.catering.Model.Restaurant;
 import com.example.catering.R;
+import com.example.catering.Services.FirebaseService;
 import com.example.catering.Services.UtilsService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,9 +44,19 @@ public class RestaurantDetailFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private int nbAvis = 0;
+
     private Restaurant restaurant;
 
+    private List<Avis> listeAvis = new ArrayList<>();
+
+    private List<AvisView> listeAvisView = new ArrayList<>();
+
+    private ListView listItems;
+
     private UtilsService utilsService = new UtilsService();
+
+    private FirebaseService firebaseService = new FirebaseService();
 
     public RestaurantDetailFragment(Restaurant restaurant) {
         this.restaurant = restaurant;
@@ -70,10 +94,12 @@ public class RestaurantDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_restaurant_detail, container, false);
-        TextView nomRestaurant = view.findViewById(R.id.nom_restaurant);
-        TextView descriptionRestaurant = view.findViewById(R.id.description_restaurant);
-        nomRestaurant.setText(this.restaurant.getNom());
-        descriptionRestaurant.setText(this.restaurant.getDescription());
+
+        initDetailRestaurant(view);
+
+        listItems = view.findViewById(R.id.liste_avis_restaurant);
+
+        initAvisRestaurant(view);
 
         Button reservationButton = view.findViewById(R.id.reserver_button);
         reservationButton.setOnClickListener(new View.OnClickListener() {
@@ -84,5 +110,61 @@ public class RestaurantDetailFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void initDetailRestaurant(View view){
+
+        TextView nomRestaurant = view.findViewById(R.id.nom_restaurant);
+        TextView descriptionRestaurant = view.findViewById(R.id.description_restaurant);
+        TextView adresseRestaurant = view.findViewById(R.id.adresse_restaurant);
+        TextView mailRestaurant = view.findViewById(R.id.mail_restaurant);
+        TextView telephoneRestaurant = view.findViewById(R.id.telephone_restaurant);
+
+        nomRestaurant.setText(this.restaurant.getNom());
+        adresseRestaurant.setText(this.restaurant.getAdresse() + ", " + this.restaurant.getCodePostal());
+        mailRestaurant.setText(this.restaurant.getMail());
+        telephoneRestaurant.setText(this.restaurant.getTelephone());
+        descriptionRestaurant.setText(this.restaurant.getDescription());
+    }
+
+    private void initAvisRestaurant(View view){
+        firebaseService.findAllAvisByRestaurant(restaurant.getId(), new DataCallBack<List<Avis>>() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onDataReceived(List<Avis> data) {
+                listeAvis = data;
+                nbAvis = listeAvis.size();
+                TextView libelleAvis = view.findViewById(R.id.libelle_avis);
+                libelleAvis.setText("Avis (" + nbAvis + ")");
+                adaptListViewFromList(view);
+            }
+        });;
+    }
+
+    private void adaptListViewFromList(View view){
+        listeAvisView= listeAvis.stream().map(avis -> new AvisView(avis.getNomUtilisateur(), avis.getCommentaire())).collect(Collectors.toList());
+        ArrayAdapter<AvisView> adapter2 = new ArrayAdapter<AvisView>(
+                view.getContext(),
+                android.R.layout.simple_list_item_2,
+                android.R.id.text1,
+                listeAvisView) {
+
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+
+                AvisView avis = getItem(position);
+
+                TextView nomUtilisateurTextView = view.findViewById(android.R.id.text1);
+                TextView commentaireTextView = view.findViewById(android.R.id.text2);
+
+                nomUtilisateurTextView.setText(avis.getNomUtilisateur());
+                commentaireTextView.setText(avis.getCommentaire());
+
+                return view;
+            }
+        };
+        listItems.setAdapter(adapter2);
     }
 }
