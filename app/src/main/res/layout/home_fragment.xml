@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Switch
+        android:id="@+id/switchListMap"
+        android:layout_width="112dp"
+        android:layout_height="41dp"
+        android:layout_marginLeft="5dp"
+        android:text="List / Map" />
+
+    <FrameLayout
+        android:id="@+id/fragmentContainerHome"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/switchListMap">
+    </FrameLayout>
+</RelativeLayout>

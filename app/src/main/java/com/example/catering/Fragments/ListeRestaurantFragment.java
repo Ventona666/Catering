@@ -2,7 +2,6 @@ package com.example.catering.Fragments;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -18,9 +17,6 @@ import com.example.catering.Model.Restaurant;
 import com.example.catering.R;
 import com.example.catering.Services.FirebaseService;
 import com.example.catering.Services.UtilsService;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,11 +110,11 @@ public class ListeRestaurantFragment extends Fragment {
         return new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-
                 String selectedRestaurant = (String) adapterView.getItemAtPosition(position);
                 Restaurant restaurant = findRestaurantByNom(selectedRestaurant);
-                utilsService.replaceFragment(getParentFragmentManager(), new RestaurantDetailFragment(restaurant));
-
+                if(getParentFragment() != null){
+                    utilsService.replaceFragment(getParentFragment().getParentFragmentManager(), new RestaurantDetailFragment(restaurant));
+                }
             }
         };
     }
