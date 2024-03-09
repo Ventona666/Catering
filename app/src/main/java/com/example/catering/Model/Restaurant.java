@@ -1,9 +1,11 @@
 package com.example.catering.Model;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 public class Restaurant implements Serializable {
 
+    private Long id;
     private String nom;
 
     private String adresse;
@@ -21,6 +23,10 @@ public class Restaurant implements Serializable {
     private double lon;
 
     public Restaurant(){}
+
+    public Long getId() {
+        return id;
+    }
 
     public String getNom() {
         return nom;

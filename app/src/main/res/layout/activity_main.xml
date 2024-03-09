@@ -9,10 +9,12 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/material_dynamic_primary50"
+        android:background="@color/primary"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
-        app:title="CATERING" />
+        app:title="CATERING"
+        app:titleTextAppearance="@style/TextAppearance.AppCompat.Display1"
+        app:titleTextColor="@color/white" />
 
     <FrameLayout
         android:id="@+id/fragmentContainer"
