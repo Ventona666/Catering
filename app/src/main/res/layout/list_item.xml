@@ -6,7 +6,6 @@
     android:layout_height="wrap_content"
     android:layout_marginStart="12dp"
     android:layout_marginEnd="12dp"
-    android:layout_marginVertical="10dp"
     app:cardCornerRadius="20dp"
     app:cardElevation="8dp">
 
@@ -21,7 +20,7 @@
             android:layout_marginVertical="8dp"
             android:id="@+id/listItemName"
             android:textSize="20sp"
-            android:text="Restaurant"
+            android:text="@string/restaurant"
             android:textColor="@color/material_dynamic_primary50">
         </TextView>
 
@@ -32,7 +31,7 @@
             android:layout_marginTop="35dp"
             android:id="@+id/address"
             android:textSize="12sp"
-            android:text="Address"
+            android:text="@string/address"
             android:textColor="@color/material_dynamic_primary20">
         </TextView>
 
@@ -42,7 +41,7 @@
             android:layout_marginStart="5dp"
             android:layout_marginVertical="10dp"
             android:layout_toEndOf="@+id/listItemName"
-            android:text="Voir plus"
+            android:text="@string/voir_plus"
             android:textColor="@color/material_dynamic_primary20"
             android:textSize="17sp">
         </TextView>
