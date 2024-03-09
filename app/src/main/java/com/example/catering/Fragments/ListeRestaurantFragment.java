@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.example.catering.Model.Restaurant;
 import com.example.catering.R;
 import com.example.catering.Services.FirebaseService;
 import com.example.catering.Services.UtilsService;
+import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,12 +94,17 @@ public class ListeRestaurantFragment extends Fragment {
     private void initRestaurantsList(View view){
         firebaseService.findAllRestaurants(new DataCallBack<List<Restaurant>>() {
             @Override
-            public void onDataReceived(List<Restaurant> data) {
+            public void onSuccess(List<Restaurant> data) {
                 listeRestaurants = data;
                 listeRestaurantsView = listeRestaurants.stream().map(Restaurant::getNom).collect(Collectors.toList());
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_list_item_1, listeRestaurantsView);
                 listItems.setAdapter(adapter);
                 listItems.setOnItemClickListener(onClickListeRestaurant());
+            }
+
+            @Override
+            public void onError(DatabaseError error){
+                Log.e("Erreur lors de la recuperation des restaurants", error.toString());
             }
         });
     }

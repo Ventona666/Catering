@@ -23,6 +23,7 @@ import com.example.catering.Model.Restaurant;
 import com.example.catering.R;
 import com.example.catering.Services.FirebaseService;
 import com.example.catering.Services.UtilsService;
+import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,12 +103,10 @@ public class RestaurantDetailFragment extends Fragment {
         initAvisRestaurant(view);
 
         Button reservationButton = view.findViewById(R.id.reserver_button);
-        reservationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                utilsService.replaceFragment(getParentFragmentManager(), new ReservationRestaurantFragment(restaurant));
-            }
-        });
+        reservationButton.setOnClickListener(onClickReserverButton());
+
+        Button ajouterAvisButton = view.findViewById(R.id.ajouter_avis_button);
+        ajouterAvisButton.setOnClickListener(onClickAjouterAvisButton());
 
         return view;
     }
@@ -131,12 +130,17 @@ public class RestaurantDetailFragment extends Fragment {
         firebaseService.findAllAvisByRestaurant(restaurant.getId(), new DataCallBack<List<Avis>>() {
             @SuppressLint("SetTextI18n")
             @Override
-            public void onDataReceived(List<Avis> data) {
+            public void onSuccess(List<Avis> data) {
                 listeAvis = data;
                 nbAvis = listeAvis.size();
                 TextView libelleAvis = view.findViewById(R.id.libelle_avis);
                 libelleAvis.setText("Avis (" + nbAvis + ")");
                 adaptListViewFromList(view);
+            }
+
+            @Override
+            public void onError(DatabaseError error){
+                Log.e("Erreur lors de la recuperation des avis", error.toString());
             }
         });;
     }
@@ -166,5 +170,25 @@ public class RestaurantDetailFragment extends Fragment {
             }
         };
         listItems.setAdapter(adapter2);
+    }
+
+    private View.OnClickListener onClickReserverButton(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                utilsService.replaceFragment(getParentFragmentManager(), new ReservationRestaurantFragment(restaurant));
+            }
+        };
+
+    }
+
+    private View.OnClickListener onClickAjouterAvisButton(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                utilsService.replaceFragment(getParentFragmentManager(), new CreationAvisRestaurantFragment(restaurant));
+            }
+        };
+
     }
 }

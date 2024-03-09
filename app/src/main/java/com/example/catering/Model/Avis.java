@@ -4,18 +4,30 @@ import java.io.Serializable;
 
 public class Avis implements Serializable {
 
-    private Long id;
+    private String id;
 
     private String nomUtilisateur;
 
     private String commentaire;
 
+    private Integer note;
+
     private Long restaurantId;
 
     public Avis() {}
 
-    public Long getId() {
+    public Avis(String nomUtilisateur, String commentaire, Long restaurantId) {
+        this.nomUtilisateur = nomUtilisateur;
+        this.commentaire = commentaire;
+        this.restaurantId = restaurantId;
+    }
+
+    public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getNomUtilisateur() {
@@ -34,6 +46,14 @@ public class Avis implements Serializable {
         this.commentaire = commentaire;
     }
 
+    public Integer getNote() {
+        return note;
+    }
+
+    public void setNote(Integer note) {
+        this.note = note;
+    }
+
     public Long getRestaurantId() {
         return restaurantId;
     }
@@ -48,6 +68,7 @@ public class Avis implements Serializable {
                 "id=" + id +
                 ", nomUtilisateur='" + nomUtilisateur + '\'' +
                 ", commentaire='" + commentaire + '\'' +
+                ", note='" + note + '\'' +
                 ", restaurantId=" + restaurantId +
                 '}';
     }
