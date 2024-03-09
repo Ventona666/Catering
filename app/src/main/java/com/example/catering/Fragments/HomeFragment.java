@@ -9,9 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
-import android.widget.Switch;
 
 import com.example.catering.R;
 import com.example.catering.Utils.ViewPagerHomeAdapter;
@@ -21,7 +19,6 @@ public class HomeFragment extends Fragment {
     TabLayout tabLayout;
     ViewPager2 viewPager2;
     ViewPagerHomeAdapter viewPagerHomeAdapter;
-    FrameLayout frameLayout;
 
     @Nullable
     @Override
@@ -35,6 +32,7 @@ public class HomeFragment extends Fragment {
         viewPager2 = view.findViewById(R.id.viewPagerHome);
         viewPagerHomeAdapter = new ViewPagerHomeAdapter(this);
         viewPager2.setAdapter(viewPagerHomeAdapter);
+        viewPager2.setUserInputEnabled(false);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
