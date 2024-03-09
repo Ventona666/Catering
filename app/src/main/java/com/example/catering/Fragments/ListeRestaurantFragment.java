@@ -17,6 +17,7 @@ import com.example.catering.Model.Restaurant;
 import com.example.catering.R;
 import com.example.catering.Services.FirebaseService;
 import com.example.catering.Services.UtilsService;
+import com.example.catering.Utils.ListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +96,7 @@ public class ListeRestaurantFragment extends Fragment {
             public void onDataReceived(List<Restaurant> data) {
                 listeRestaurants = data;
                 listeRestaurantsView = listeRestaurants.stream().map(Restaurant::getNom).collect(Collectors.toList());
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_list_item_1, listeRestaurantsView);
+                ListAdapter adapter = new ListAdapter(view.getContext(), listeRestaurants);
                 listItems.setAdapter(adapter);
                 listItems.setOnItemClickListener(onClickListeRestaurant());
             }
@@ -110,8 +111,7 @@ public class ListeRestaurantFragment extends Fragment {
         return new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                String selectedRestaurant = (String) adapterView.getItemAtPosition(position);
-                Restaurant restaurant = findRestaurantByNom(selectedRestaurant);
+                Restaurant restaurant = (Restaurant) adapterView.getItemAtPosition(position);
                 if(getParentFragment() != null){
                     utilsService.replaceFragment(getParentFragment().getParentFragmentManager(), new RestaurantDetailFragment(restaurant));
                 }

@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import com.example.catering.Common.DataCallBack;
 import com.example.catering.Model.Avis;
 import com.example.catering.Model.Restaurant;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
