@@ -1,55 +1,246 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragments.RestaurantDetailFragment">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
         <TextView
             android:id="@+id/nom_restaurant"
             android:layout_width="match_parent"
-            android:layout_height="73dp"
+            android:layout_height="wrap_content"
             android:paddingLeft="15dp"
             android:paddingTop="15dp"
             android:text="Nom restaurant"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="@color/primary"
             android:textSize="25sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-        <TextView
-            android:id="@+id/textView2"
+        <RelativeLayout
+            android:id="@+id/adresseLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/nom_restaurant">
+
+            <!-- Icône -->
+            <ImageView
+                android:id="@+id/iconImageAdresse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_adress"
+                />
+
+            <!-- Texte -->
+            <TextView
+                android:id="@+id/adresse_restaurant"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/iconImageAdresse"
+                android:text="Adresse" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/mailLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/adresseLayout">
+
+            <!-- Icône -->
+            <ImageView
+                android:id="@+id/iconImageMail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_mail" />
+
+            <!-- Texte -->
+            <TextView
+                android:id="@+id/mail_restaurant"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/iconImageMail"
+                android:text="Email" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/telephoneLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mailLayout">
+
+            <!-- Icône -->
+            <ImageView
+                android:id="@+id/iconImageTel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_tel" />
+
+            <!-- Texte -->
+            <TextView
+                android:id="@+id/telephone_restaurant"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/iconImageTel"
+                android:text="Telephone" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/descriptionLibelle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
             android:paddingLeft="15dp"
             android:text="Description"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/primary"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/telephoneLayout"/>
+
+        <View
+            android:id="@+id/separateurDescription"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@android:color/darker_gray"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/descriptionLibelle"/>
 
         <TextView
             android:id="@+id/description_restaurant"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:paddingLeft="15dp"
             android:paddingTop="2dp"
             android:paddingRight="15dp"
             android:text="Une Description"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/separateurDescription"/>
 
-        <Button
-            android:id="@+id/reserver_button"
+        <TextView
+            android:id="@+id/libelle_avis"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
-            android:text="Réserver" />
-    </LinearLayout>
+            android:paddingLeft="15dp"
+            android:paddingTop="16dp"
+            android:text="Avis"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/primary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/description_restaurant"/>
+
+        <View
+            android:id="@+id/separateurAvis"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@android:color/darker_gray"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/libelle_avis"/>
+
+    <ScrollView
+        android:id="@+id/container_liste_avis_restaurant"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@+id/separateurAvis"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ListView
+            android:id="@+id/liste_avis_restaurant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </ScrollView>
+
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/boutonsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp"
+            app:alignContent="flex_start"
+            app:alignItems="center"
+            app:justifyContent="space_between"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/container_liste_avis_restaurant"
+            app:layout_constraintVertical_bias="1.0">
+
+            <Button
+                android:id="@+id/laisser_avis_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/primary"
+                android:text="Laisser un avis" />
+
+            <Button
+                android:id="@+id/reserver_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/primary"
+                android:text="Réserver" />
+
+        </com.google.android.flexbox.FlexboxLayout>
 
 
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
