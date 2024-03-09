@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,8 +33,6 @@ public class MapsRestaurantFragment extends Fragment {
     private FirebaseService firebaseService = new FirebaseService();
     private List<Restaurant> listeRestaurants = new ArrayList<>();
     private UtilsService utilsService = new UtilsService();
-    private int latSum = 0;
-    private int lonSum = 0;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -52,25 +52,40 @@ public class MapsRestaurantFragment extends Fragment {
                 public void onSuccess(List<Restaurant> data) {
                     listeRestaurants = data;
 
-                    googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                        @Override
-                        public boolean onMarkerClick(@NonNull Marker marker) {
-                            String title = marker.getTitle();
-                            Restaurant restaurant = listeRestaurants.stream().filter(r -> r.getNom().equals(title)).findFirst().get();
-                            if (getParentFragment() != null){
-                                utilsService.replaceFragment(getParentFragment().getParentFragmentManager(), new RestaurantDetailFragment(restaurant));
-                            }
-                            return true;
+                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(@NonNull Marker marker) {
+                        String title = marker.getTitle();
+                        Restaurant restaurant = listeRestaurants.stream().filter(r -> r.getNom().equals(title)).findFirst().orElse(null);
+                        if (restaurant != null) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                            builder.setMessage(restaurant.getNom()+"\n\nDescription : "+restaurant.getDescription());
+                            builder.setPositiveButton("Voir le détail", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    if (getParentFragment() != null) {
+                                        utilsService.replaceFragment(getParentFragment().getParentFragmentManager(), new RestaurantDetailFragment(restaurant));
+                                    }
+                                }
+                            });
+                            builder.setNegativeButton("Retour", null);
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
                         }
                     });
 
                     initMarker(googleMap);
+                  
+                    // Coordonnées brutes d'Agen
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(44.205, 0.6206)));
+                    googleMap.setMinZoomPreference(14);
                 }
 
                 @Override
                 public void onError(DatabaseError error) {
                     Log.e("Erreur lors de la recuperation des restaurants", error.toString());
                 }
+
             });
         }
     };
@@ -87,11 +102,7 @@ public class MapsRestaurantFragment extends Fragment {
         for (int i = 0; i < listeRestaurants.size(); i++){
             LatLng latLng = new LatLng(listeRestaurants.get(i).getLat(), listeRestaurants.get(i).getLon());
             googleMap.addMarker(new MarkerOptions().position(latLng).title(listeRestaurants.get(i).getNom()));
-            latSum += (int) listeRestaurants.get(i).getLat();
-            lonSum += (int) listeRestaurants.get(i).getLon();
         }
-        LatLng latLngMoy = new LatLng((double) latSum /listeRestaurants.size(), (double) lonSum / listeRestaurants.size());
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLngMoy));
     }
 
     @Override
