@@ -28,8 +28,6 @@ public class MapsRestaurantFragment extends Fragment {
     private FirebaseService firebaseService = new FirebaseService();
     private List<Restaurant> listeRestaurants = new ArrayList<>();
     private UtilsService utilsService = new UtilsService();
-    private int latSum = 0;
-    private int lonSum = 0;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -60,6 +58,10 @@ public class MapsRestaurantFragment extends Fragment {
                 });
 
                 initMarker(googleMap);
+
+                // Coordonnées brutes d'Agen
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(44.205, 0.6206)));
+                googleMap.setMinZoomPreference(14);
             });
         }
     };
@@ -76,11 +78,7 @@ public class MapsRestaurantFragment extends Fragment {
         for (int i = 0; i < listeRestaurants.size(); i++){
             LatLng latLng = new LatLng(listeRestaurants.get(i).getLat(), listeRestaurants.get(i).getLon());
             googleMap.addMarker(new MarkerOptions().position(latLng).title(listeRestaurants.get(i).getNom()));
-            latSum += (int) listeRestaurants.get(i).getLat();
-            lonSum += (int) listeRestaurants.get(i).getLon();
         }
-        LatLng latLngMoy = new LatLng((double) latSum /listeRestaurants.size(), (double) lonSum / listeRestaurants.size());
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLngMoy));
     }
 
     @Override
