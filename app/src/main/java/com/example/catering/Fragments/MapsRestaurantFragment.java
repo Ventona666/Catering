@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,9 +51,21 @@ public class MapsRestaurantFragment extends Fragment {
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
                         String title = marker.getTitle();
-                        Restaurant restaurant = listeRestaurants.stream().filter(r -> r.getNom().equals(title)).findFirst().get();
-                        if (getParentFragment() != null){
-                            utilsService.replaceFragment(getParentFragment().getParentFragmentManager(), new RestaurantDetailFragment(restaurant));
+                        Restaurant restaurant = listeRestaurants.stream().filter(r -> r.getNom().equals(title)).findFirst().orElse(null);
+                        if (restaurant != null) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                            builder.setMessage(restaurant.getNom()+"\n\nDescription : "+restaurant.getDescription());
+                            builder.setPositiveButton("Voir le détail", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    if (getParentFragment() != null) {
+                                        utilsService.replaceFragment(getParentFragment().getParentFragmentManager(), new RestaurantDetailFragment(restaurant));
+                                    }
+                                }
+                            });
+                            builder.setNegativeButton("Retour", null);
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
                         }
                         return true;
                     }
