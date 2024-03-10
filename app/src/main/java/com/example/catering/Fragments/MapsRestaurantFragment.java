@@ -51,41 +51,40 @@ public class MapsRestaurantFragment extends Fragment {
                 @Override
                 public void onSuccess(List<Restaurant> data) {
                     listeRestaurants = data;
-
-                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(@NonNull Marker marker) {
-                        String title = marker.getTitle();
-                        Restaurant restaurant = listeRestaurants.stream().filter(r -> r.getNom().equals(title)).findFirst().orElse(null);
-                        if (restaurant != null) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                            builder.setMessage(restaurant.getNom()+"\n\nDescription : "+restaurant.getDescription());
-                            builder.setPositiveButton("Voir le détail", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    if (getParentFragment() != null) {
-                                        utilsService.replaceFragment(getParentFragment().getParentFragmentManager(), new RestaurantDetailFragment(restaurant));
+                    googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                        @Override
+                        public boolean onMarkerClick(@NonNull Marker marker) {
+                            String title = marker.getTitle();
+                            Restaurant restaurant = listeRestaurants.stream().filter(r -> r.getNom().equals(title)).findFirst().orElse(null);
+                            if (restaurant != null) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                builder.setMessage(restaurant.getNom()+"\n\nDescription : "+restaurant.getDescription());
+                                builder.setPositiveButton("Voir le détail", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        if (getParentFragment() != null) {
+                                            utilsService.replaceFragment(getParentFragment().getParentFragmentManager(), new RestaurantDetailFragment(restaurant));
+                                        }
                                     }
-                                }
-                            });
-                            builder.setNegativeButton("Retour", null);
-                            AlertDialog dialog = builder.create();
-                            dialog.show();
+                                });
+                                builder.setNegativeButton("Retour", null);
+                                AlertDialog dialog = builder.create();
+                                dialog.show();
+                            }
+                            return true;
                         }
                     });
 
                     initMarker(googleMap);
-                  
+
                     // Coordonnées brutes d'Agen
                     googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(44.205, 0.6206)));
                     googleMap.setMinZoomPreference(14);
                 }
-
                 @Override
                 public void onError(DatabaseError error) {
                     Log.e("Erreur lors de la recuperation des restaurants", error.toString());
                 }
-
             });
         }
     };

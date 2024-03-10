@@ -9,7 +9,7 @@
         android:id="@+id/tabLayoutHome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabTextColor="@color/material_dynamic_primary20"
+        app:tabTextColor="@color/black"
         app:tabIndicatorColor="@color/primary"
         app:tabSelectedTextColor="@color/primary">
 
@@ -32,6 +32,5 @@
         android:id="@+id/viewPagerHome"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:layout_below="@+id/tabLayoutHome"/>
 </RelativeLayout>
