@@ -7,10 +7,12 @@ import androidx.fragment.app.Fragment;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.catering.Common.DataCallBack;
 import com.example.catering.Model.Restaurant;
 import com.example.catering.R;
 import com.example.catering.Services.FirebaseService;
@@ -22,6 +24,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +47,10 @@ public class MapsRestaurantFragment extends Fragment {
          */
         @Override
         public void onMapReady(@NonNull GoogleMap googleMap) {
-            firebaseService.findAllRestaurants(data -> {
-                listeRestaurants = data;
+            firebaseService.findAllRestaurants(new DataCallBack<List<Restaurant>>() {
+                @Override
+                public void onSuccess(List<Restaurant> data) {
+                    listeRestaurants = data;
 
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
@@ -67,15 +72,20 @@ public class MapsRestaurantFragment extends Fragment {
                             AlertDialog dialog = builder.create();
                             dialog.show();
                         }
-                        return true;
-                    }
-                });
+                    });
 
-                initMarker(googleMap);
+                    initMarker(googleMap);
+                  
+                    // Coordonnées brutes d'Agen
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(44.205, 0.6206)));
+                    googleMap.setMinZoomPreference(14);
+                }
 
-                // Coordonnées brutes d'Agen
-                googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(44.205, 0.6206)));
-                googleMap.setMinZoomPreference(14);
+                @Override
+                public void onError(DatabaseError error) {
+                    Log.e("Erreur lors de la recuperation des restaurants", error.toString());
+                }
+
             });
         }
     };

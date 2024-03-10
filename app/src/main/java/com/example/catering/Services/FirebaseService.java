@@ -3,6 +3,7 @@ package com.example.catering.Services;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.catering.Common.DataCallBack;
 import com.example.catering.Model.Avis;
@@ -45,13 +46,13 @@ public class FirebaseService {
                 }
 
                 if (dataCallBack != null) {
-                    dataCallBack.onDataReceived(restaurants);
+                    dataCallBack.onSuccess(restaurants);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("Error database", error.toString());
+                dataCallBack.onError(error);
             }
         });
 
@@ -72,13 +73,31 @@ public class FirebaseService {
                 }
 
                 if (dataCallBack != null) {
-                    dataCallBack.onDataReceived(listeAvis);
+                    dataCallBack.onSuccess(listeAvis);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("Error database", error.toString());
+                dataCallBack.onError(error);
+            }
+        });
+    }
+
+    public void createAvis(Avis avis, DataCallBack<String> dataCallBack){
+        DatabaseReference databaseReference = firebaseDatabase.getReference(AVIS_REFERENCE);
+        String avisKey = databaseReference.push().getKey();
+        avis.setId(avisKey);
+        databaseReference.child(avisKey).setValue(avis, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                if(error != null){
+                    dataCallBack.onError(error);
+
+                }else {
+                    String messageSuccess = "L'ajout de l'avis a ete correctement effectue en base";
+                    dataCallBack.onSuccess(messageSuccess);
+                }
             }
         });
     }

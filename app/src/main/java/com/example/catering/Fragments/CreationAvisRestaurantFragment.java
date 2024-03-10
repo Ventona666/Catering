@@ -1,0 +1,308 @@
+package com.example.catering.Fragments;
+
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.fragment.app.Fragment;
+
+import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.example.catering.Common.DataCallBack;
+import com.example.catering.Model.Avis;
+import com.example.catering.Model.Restaurant;
+import com.example.catering.R;
+import com.example.catering.Services.FirebaseService;
+import com.example.catering.Services.UtilsService;
+import com.google.firebase.database.DatabaseError;
+
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link CreationAvisRestaurantFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class CreationAvisRestaurantFragment extends Fragment {
+
+    private Restaurant restaurant;
+
+    private int formElementNote;
+
+    private EditText formElementNomUtilisateur;
+
+    private EditText formElementCommentaire;
+
+    private ImageView photo1;
+
+    private ImageView photo2;
+
+    private Button envoyerAvisButton;
+
+    private Button galerieButton;
+
+    private Button appareilPhotoButton;
+
+    private Button suppPhoto1Button;
+
+    private Button suppPhoto2Button;
+
+    private int nbPhotos;
+
+    private ActivityResultLauncher<String> galerieLauncher;
+
+    private UtilsService utilsService = new UtilsService();
+
+    private FirebaseService firebaseService = new FirebaseService();
+
+    public CreationAvisRestaurantFragment(Restaurant restaurant) {
+        this.restaurant = restaurant;
+    }
+
+    public static CreationAvisRestaurantFragment newInstance(Restaurant restaurant) {
+        CreationAvisRestaurantFragment fragment = new CreationAvisRestaurantFragment(restaurant);
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @SuppressLint({"MissingInflatedId", "SetTextI18n"})
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_creation_avis_restaurant, container, false);
+
+        formElementNote = 0;
+        nbPhotos = 0 ;
+        formElementNomUtilisateur = view.findViewById(R.id.formNomUtilisateur);
+        formElementCommentaire = view.findViewById(R.id.formCommentaire);
+        photo1 = view.findViewById(R.id.photo1);
+        photo2 = view.findViewById(R.id.photo2);
+        initGalerieLauncher(view);
+        setTextLabelPhotos(view);
+
+        envoyerAvisButton = view.findViewById(R.id.envoyer_avis_button);
+        envoyerAvisButton.setEnabled(false);
+        galerieButton = view.findViewById(R.id.galerie_photo_button);
+        appareilPhotoButton = view.findViewById(R.id.appareil_photo_button);
+        suppPhoto1Button = view.findViewById(R.id.suppPhoto1Button);
+        suppPhoto1Button.setVisibility(View.GONE);
+        suppPhoto2Button = view.findViewById(R.id.suppPhoto2Button);
+        suppPhoto2Button.setVisibility(View.GONE);
+
+
+        TextWatcher textWatcher = createTextWatcher();
+        formElementNomUtilisateur.addTextChangedListener(textWatcher);
+        formElementCommentaire.addTextChangedListener(textWatcher);
+
+        envoyerAvisButton.setOnClickListener(onClickEnvoyerAvisButton());
+        galerieButton.setOnClickListener(onClickGalerieButton());
+        suppPhoto1Button.setOnClickListener(onClickSuppButton(view,1));
+        suppPhoto2Button.setOnClickListener(onClickSuppButton(view,2));
+
+        //Notes
+        final ImageView star1 = view.findViewById(R.id.star1);
+        final ImageView star2 = view.findViewById(R.id.star2);
+        final ImageView star3 = view.findViewById(R.id.star3);
+        final ImageView star4 = view.findViewById(R.id.star4);
+        final ImageView star5 = view.findViewById(R.id.star5);
+
+        star1.setOnClickListener(onStarClick(view,1));
+        star2.setOnClickListener(onStarClick(view,2));
+        star3.setOnClickListener(onStarClick(view,3));
+        star4.setOnClickListener(onStarClick(view,4));
+        star5.setOnClickListener(onStarClick(view,5));
+
+        return view;
+    }
+
+    private TextWatcher createTextWatcher() {
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                envoyerAvisButton.setEnabled(getFormValidationValue());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        };
+    }
+
+    private void updateStars(View view, int note){
+        final ImageView star1 = view.findViewById(R.id.star1);
+        final ImageView star2 = view.findViewById(R.id.star2);
+        final ImageView star3 = view.findViewById(R.id.star3);
+        final ImageView star4 = view.findViewById(R.id.star4);
+        final ImageView star5 = view.findViewById(R.id.star5);
+
+        switch (note){
+            case 1:
+                star1.setImageResource(R.drawable.filled_star);
+                star2.setImageResource(R.drawable.empty_star);
+                star3.setImageResource(R.drawable.empty_star);
+                star4.setImageResource(R.drawable.empty_star);
+                star5.setImageResource(R.drawable.empty_star);
+                break;
+            case 2:
+                star1.setImageResource(R.drawable.filled_star);
+                star2.setImageResource(R.drawable.filled_star);
+                star3.setImageResource(R.drawable.empty_star);
+                star4.setImageResource(R.drawable.empty_star);
+                star5.setImageResource(R.drawable.empty_star);
+                break;
+            case 3:
+                star1.setImageResource(R.drawable.filled_star);
+                star2.setImageResource(R.drawable.filled_star);
+                star3.setImageResource(R.drawable.filled_star);
+                star4.setImageResource(R.drawable.empty_star);
+                star5.setImageResource(R.drawable.empty_star);
+                break;
+            case 4:
+                star1.setImageResource(R.drawable.filled_star);
+                star2.setImageResource(R.drawable.filled_star);
+                star3.setImageResource(R.drawable.filled_star);
+                star4.setImageResource(R.drawable.filled_star);
+                star5.setImageResource(R.drawable.empty_star);
+                break;
+            case 5:
+                star1.setImageResource(R.drawable.filled_star);
+                star2.setImageResource(R.drawable.filled_star);
+                star3.setImageResource(R.drawable.filled_star);
+                star4.setImageResource(R.drawable.filled_star);
+                star5.setImageResource(R.drawable.filled_star);
+                break;
+        }
+    }
+
+    private void initGalerieLauncher(View view){
+        galerieLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null) {
+                        if (photo1.getDrawable() == null) {
+                            photo1.setImageURI(uri);
+                            suppPhoto1Button.setVisibility(View.VISIBLE);
+                        } else {
+                            photo2.setImageURI(uri);
+                            suppPhoto2Button.setVisibility(View.VISIBLE);
+                            galerieButton.setVisibility(View.GONE);
+                            appareilPhotoButton.setVisibility(View.GONE);
+                        }
+                        nbPhotos++;
+                        setTextLabelPhotos(view);
+                    }
+                });
+    }
+
+    //utils methods
+    private boolean getFormValidationValue(){
+        return !formElementNomUtilisateur.getText().toString().isEmpty() && !formElementCommentaire.getText().toString().isEmpty() && formElementNote != 0;
+    }
+
+    private void enablePhotoButtons(){
+        galerieButton.setVisibility(View.VISIBLE);
+        appareilPhotoButton.setVisibility(View.VISIBLE);
+    }
+
+    private void setTextLabelPhotos(View view){
+        ((TextView) view.findViewById(R.id.labelPhotos)).setText("Photos (" + nbPhotos + ")");
+    }
+
+
+    //Listeners
+    private View.OnClickListener onClickEnvoyerAvisButton(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nomUtilisateur = formElementNomUtilisateur.getText().toString();
+                String commentaire = formElementCommentaire.getText().toString();
+
+                Avis avis = new Avis();
+                avis.setNomUtilisateur(nomUtilisateur);
+                avis.setCommentaire(commentaire);
+                avis.setNote(formElementNote);
+                avis.setRestaurantId(restaurant.getId());
+                firebaseService.createAvis(avis, new DataCallBack<String>() {
+                    @Override
+                    public void onSuccess(String data) {
+                        utilsService.replaceFragment(getParentFragmentManager(), new RestaurantDetailFragment(restaurant));
+                        Log.d("Creation avis", data);
+                    }
+
+                    @Override
+                    public void onError(DatabaseError error) {
+                        Log.e("Erreur lors de la creation de l'avis", error.toString());
+                    }
+                });
+            }
+        };
+
+    }
+
+    private View.OnClickListener onStarClick(View view, int note){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                formElementNote = note;
+                updateStars(view, note);
+                envoyerAvisButton.setEnabled(getFormValidationValue());
+            }
+        };
+    }
+
+    private View.OnClickListener onClickGalerieButton(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                galerieLauncher.launch("image/*");
+            }
+        };
+    }
+
+    private View.OnClickListener onClickSuppButton(View view, int numPhoto){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(numPhoto == 1 ){
+                    if(photo2.getDrawable() != null){
+                        photo1.setImageDrawable(photo2.getDrawable());
+                        photo2.setImageDrawable(null);
+                        suppPhoto2Button.setVisibility(View.GONE);
+                        enablePhotoButtons();
+                    }else{
+                        photo1.setImageDrawable(null);
+                        suppPhoto1Button.setVisibility(View.GONE);
+                    }
+
+                }else{
+                    photo2.setImageDrawable(null);
+                    suppPhoto2Button.setVisibility(View.GONE);
+                    enablePhotoButtons();
+                }
+                nbPhotos--;
+                setTextLabelPhotos(view);
+            }
+        };
+    }
+}
