@@ -2,11 +2,14 @@ package com.example.catering.Fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -22,12 +25,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.catering.Common.DataCallBack;
+import com.example.catering.Common.DataCallBackImage;
 import com.example.catering.Model.Avis;
 import com.example.catering.Model.Restaurant;
 import com.example.catering.R;
 import com.example.catering.Services.FirebaseService;
 import com.example.catering.Services.UtilsService;
+import com.example.catering.Utils.ListImageDeleteButtonAdapter;
 import com.google.firebase.database.DatabaseError;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -48,6 +59,13 @@ public class CreationAvisRestaurantFragment extends Fragment {
 
     private ImageView photo2;
 
+    private RecyclerView listeImageDeleteButton;
+
+    private List<Uri> listeUriPhoto = new ArrayList<>();
+
+    private String urlPhoto1;
+    private String urlPhoto2;
+
     private Button envoyerAvisButton;
 
     private Button galerieButton;
@@ -67,7 +85,10 @@ public class CreationAvisRestaurantFragment extends Fragment {
     private FirebaseService firebaseService = new FirebaseService();
 
     public CreationAvisRestaurantFragment(Restaurant restaurant) {
+
         this.restaurant = restaurant;
+        urlPhoto1 = "images/avis?restaurantId=" + this.restaurant.getId() + "&photoId=" + UUID.randomUUID() +  "/photo.jpg";
+        urlPhoto2 = "images/avis?restaurantId=" + this.restaurant.getId() + "&photoId=" + UUID.randomUUID() +  "/photo.jpg";
     }
 
     public static CreationAvisRestaurantFragment newInstance(Restaurant restaurant) {
@@ -93,8 +114,8 @@ public class CreationAvisRestaurantFragment extends Fragment {
         nbPhotos = 0 ;
         formElementNomUtilisateur = view.findViewById(R.id.formNomUtilisateur);
         formElementCommentaire = view.findViewById(R.id.formCommentaire);
-        photo1 = view.findViewById(R.id.photo1);
-        photo2 = view.findViewById(R.id.photo2);
+//        photo1 = view.findViewById(R.id.photo1);
+//        photo2 = view.findViewById(R.id.photo2);
         initGalerieLauncher(view);
         setTextLabelPhotos(view);
 
@@ -102,10 +123,30 @@ public class CreationAvisRestaurantFragment extends Fragment {
         envoyerAvisButton.setEnabled(false);
         galerieButton = view.findViewById(R.id.galerie_photo_button);
         appareilPhotoButton = view.findViewById(R.id.appareil_photo_button);
-        suppPhoto1Button = view.findViewById(R.id.suppPhoto1Button);
-        suppPhoto1Button.setVisibility(View.GONE);
-        suppPhoto2Button = view.findViewById(R.id.suppPhoto2Button);
-        suppPhoto2Button.setVisibility(View.GONE);
+//        suppPhoto1Button = view.findViewById(R.id.suppPhoto1Button);
+//        suppPhoto1Button.setVisibility(View.GONE);
+//        suppPhoto2Button = view.findViewById(R.id.suppPhoto2Button);
+//        suppPhoto2Button.setVisibility(View.GONE);
+
+        listeImageDeleteButton = view.findViewById(R.id.listImageDeleteButton);
+        listeImageDeleteButton.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        ListImageDeleteButtonAdapter listImageDeleteButtonAdapter = new ListImageDeleteButtonAdapter(getContext(), listeUriPhoto, new ListImageDeleteButtonAdapter.OnDeleteButtonClickListener() {
+            @Override
+            public void onDeleteButtonClick(Uri uri) {
+                ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
+                int position = adapter.getListeImagesUri().indexOf(uri);
+                if(position != -1){
+                    adapter.deleteItem(position);
+                    nbPhotos--;
+                    setTextLabelPhotos(view);
+                    if(!adapter.getListeImagesUri().isEmpty()){
+                        displayPhotoButtons();
+                    }
+                }
+
+            }
+        });
+        listeImageDeleteButton.setAdapter(listImageDeleteButtonAdapter);
 
 
         TextWatcher textWatcher = createTextWatcher();
@@ -114,8 +155,8 @@ public class CreationAvisRestaurantFragment extends Fragment {
 
         envoyerAvisButton.setOnClickListener(onClickEnvoyerAvisButton());
         galerieButton.setOnClickListener(onClickGalerieButton());
-        suppPhoto1Button.setOnClickListener(onClickSuppButton(view,1));
-        suppPhoto2Button.setOnClickListener(onClickSuppButton(view,2));
+//        suppPhoto1Button.setOnClickListener(onClickSuppButton(view,1));
+//        suppPhoto2Button.setOnClickListener(onClickSuppButton(view,2));
 
         //Notes
         final ImageView star1 = view.findViewById(R.id.star1);
@@ -199,19 +240,26 @@ public class CreationAvisRestaurantFragment extends Fragment {
     private void initGalerieLauncher(View view){
         galerieLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
                 uri -> {
-                    if (uri != null) {
-                        if (photo1.getDrawable() == null) {
-                            photo1.setImageURI(uri);
-                            suppPhoto1Button.setVisibility(View.VISIBLE);
-                        } else {
-                            photo2.setImageURI(uri);
-                            suppPhoto2Button.setVisibility(View.VISIBLE);
-                            galerieButton.setVisibility(View.GONE);
-                            appareilPhotoButton.setVisibility(View.GONE);
-                        }
-                        nbPhotos++;
-                        setTextLabelPhotos(view);
-                    }
+                      ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
+                      adapter.add(uri);
+                      nbPhotos++;
+                      setTextLabelPhotos(view);
+                      if(adapter.getListeImagesUri().size() > 1){
+                          maskPhotoButtons();
+                      }
+//                    if (uri != null) {
+//                        if (photo1.getDrawable() == null) {
+//                            photo1.setImageURI(uri);
+//                            suppPhoto1Button.setVisibility(View.VISIBLE);
+//                        } else {
+//                            photo2.setImageURI(uri);
+//                            suppPhoto2Button.setVisibility(View.VISIBLE);
+//                            galerieButton.setVisibility(View.GONE);
+//                            appareilPhotoButton.setVisibility(View.GONE);
+//                        }
+//                        nbPhotos++;
+//                        setTextLabelPhotos(view);
+//                    }
                 });
     }
 
@@ -220,13 +268,22 @@ public class CreationAvisRestaurantFragment extends Fragment {
         return !formElementNomUtilisateur.getText().toString().isEmpty() && !formElementCommentaire.getText().toString().isEmpty() && formElementNote != 0;
     }
 
-    private void enablePhotoButtons(){
+    private void displayPhotoButtons(){
         galerieButton.setVisibility(View.VISIBLE);
         appareilPhotoButton.setVisibility(View.VISIBLE);
     }
 
+    private void maskPhotoButtons(){
+        galerieButton.setVisibility(View.GONE);
+        appareilPhotoButton.setVisibility(View.GONE);
+    }
+
     private void setTextLabelPhotos(View view){
         ((TextView) view.findViewById(R.id.labelPhotos)).setText("Photos (" + nbPhotos + ")");
+    }
+
+    private String generateRandomPath(){
+        return "images/avis?restaurantId=" + this.restaurant.getId() + "&photoId=" + UUID.randomUUID() +  "/photo.jpg";
     }
 
 
@@ -235,6 +292,7 @@ public class CreationAvisRestaurantFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                envoyerAvisButton.setEnabled(false);
                 String nomUtilisateur = formElementNomUtilisateur.getText().toString();
                 String commentaire = formElementCommentaire.getText().toString();
 
@@ -243,6 +301,30 @@ public class CreationAvisRestaurantFragment extends Fragment {
                 avis.setCommentaire(commentaire);
                 avis.setNote(formElementNote);
                 avis.setRestaurantId(restaurant.getId());
+
+                ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
+
+                List<String> photosUrl = adapter.getListeImagesUri().stream()
+                        .map(uri -> generateRandomPath())
+                        .collect(Collectors.toList());
+                avis.setPhotosUrl(photosUrl);
+
+                for(int i = 0; i < adapter.getItemCount(); i++){
+                    Uri uri = adapter.getListeImagesUri().get(i);
+                    String url = photosUrl.get(i);
+                    firebaseService.saveImage(url, adapter.getImageDrawable(uri), new DataCallBackImage<String>() {
+                        @Override
+                        public void onSuccess(String data) {
+                            Log.d("Enregistrement image succes", data);
+                        }
+
+                        @Override
+                        public void onError(String errorMessage) {
+                            Log.e("Erreur lors de l'enregistrement de l'image dans firebase", errorMessage);
+                        }
+                    });
+                }
+
                 firebaseService.createAvis(avis, new DataCallBack<String>() {
                     @Override
                     public void onSuccess(String data) {
@@ -284,25 +366,27 @@ public class CreationAvisRestaurantFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(numPhoto == 1 ){
-                    if(photo2.getDrawable() != null){
-                        photo1.setImageDrawable(photo2.getDrawable());
-                        photo2.setImageDrawable(null);
-                        suppPhoto2Button.setVisibility(View.GONE);
-                        enablePhotoButtons();
-                    }else{
-                        photo1.setImageDrawable(null);
-                        suppPhoto1Button.setVisibility(View.GONE);
-                    }
-
-                }else{
-                    photo2.setImageDrawable(null);
-                    suppPhoto2Button.setVisibility(View.GONE);
-                    enablePhotoButtons();
-                }
+//                if(numPhoto == 1 ){
+//                    if(photo2.getDrawable() != null){
+//                        photo1.setImageDrawable(photo2.getDrawable());
+//                        photo2.setImageDrawable(null);
+//                        suppPhoto2Button.setVisibility(View.GONE);
+//                        displayPhotoButtons();
+//                    }else{
+//                        photo1.setImageDrawable(null);
+//                        suppPhoto1Button.setVisibility(View.GONE);
+//                    }
+//
+//                }else{
+//                    photo2.setImageDrawable(null);
+//                    suppPhoto2Button.setVisibility(View.GONE);
+//                    displayPhotoButtons();
+//                }
                 nbPhotos--;
                 setTextLabelPhotos(view);
             }
         };
     }
+
+
 }

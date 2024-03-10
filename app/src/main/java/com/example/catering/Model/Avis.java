@@ -1,6 +1,7 @@
 package com.example.catering.Model;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Avis implements Serializable {
 
@@ -11,6 +12,8 @@ public class Avis implements Serializable {
     private String commentaire;
 
     private Integer note;
+
+    private List<String> photosUrl;
 
     private Long restaurantId;
 
@@ -62,6 +65,14 @@ public class Avis implements Serializable {
         this.restaurantId = restaurantId;
     }
 
+    public List<String> getPhotosUrl() {
+        return photosUrl;
+    }
+
+    public void setPhotosUrl(List<String> photosUrl) {
+        this.photosUrl = photosUrl;
+    }
+
     @Override
     public String toString() {
         return "Avis{" +
@@ -69,6 +80,7 @@ public class Avis implements Serializable {
                 ", nomUtilisateur='" + nomUtilisateur + '\'' +
                 ", commentaire='" + commentaire + '\'' +
                 ", note='" + note + '\'' +
+                ", photosUrl='" + photosUrl + '\'' +
                 ", restaurantId=" + restaurantId +
                 '}';
     }

@@ -5,12 +5,14 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -23,6 +25,7 @@ import com.example.catering.Model.Restaurant;
 import com.example.catering.R;
 import com.example.catering.Services.FirebaseService;
 import com.example.catering.Services.UtilsService;
+import com.example.catering.Utils.ListAvisAdapter;
 import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
@@ -50,8 +53,6 @@ public class RestaurantDetailFragment extends Fragment {
     private Restaurant restaurant;
 
     private List<Avis> listeAvis = new ArrayList<>();
-
-    private List<AvisView> listeAvisView = new ArrayList<>();
 
     private ListView listItems;
 
@@ -135,7 +136,9 @@ public class RestaurantDetailFragment extends Fragment {
                 nbAvis = listeAvis.size();
                 TextView libelleAvis = view.findViewById(R.id.libelle_avis);
                 libelleAvis.setText("Avis (" + nbAvis + ")");
-                adaptListViewFromList(view);
+                ListAvisAdapter listAvisAdapter = new ListAvisAdapter(view.getContext(), listeAvis);
+                listItems.setAdapter(listAvisAdapter);
+                listItems.setOnItemClickListener(onClickAvis());
             }
 
             @Override
@@ -143,33 +146,6 @@ public class RestaurantDetailFragment extends Fragment {
                 Log.e("Erreur lors de la recuperation des avis", error.toString());
             }
         });;
-    }
-
-    private void adaptListViewFromList(View view){
-        listeAvisView= listeAvis.stream().map(avis -> new AvisView(avis.getNomUtilisateur(), avis.getCommentaire())).collect(Collectors.toList());
-        ArrayAdapter<AvisView> adapter2 = new ArrayAdapter<AvisView>(
-                view.getContext(),
-                android.R.layout.simple_list_item_2,
-                android.R.id.text1,
-                listeAvisView) {
-
-            @NonNull
-            @Override
-            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-
-                AvisView avis = getItem(position);
-
-                TextView nomUtilisateurTextView = view.findViewById(android.R.id.text1);
-                TextView commentaireTextView = view.findViewById(android.R.id.text2);
-
-                nomUtilisateurTextView.setText(avis.getNomUtilisateur());
-                commentaireTextView.setText(avis.getCommentaire());
-
-                return view;
-            }
-        };
-        listItems.setAdapter(adapter2);
     }
 
     private View.OnClickListener onClickReserverButton(){
@@ -190,5 +166,16 @@ public class RestaurantDetailFragment extends Fragment {
             }
         };
 
+    }
+
+    private AdapterView.OnItemClickListener onClickAvis(){
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Avis avis = (Avis) parent.getItemAtPosition(position);
+                DialogAvisFragment dialogFragment = new DialogAvisFragment(avis);
+                dialogFragment.show(getChildFragmentManager(), "DialogAvisFragment");
+            }
+        };
     }
 }
