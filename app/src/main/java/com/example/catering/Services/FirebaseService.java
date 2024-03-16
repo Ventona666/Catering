@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.example.catering.Common.DataCallBack;
 import com.example.catering.Model.Avis;
+import com.example.catering.Model.Reservation;
 import com.example.catering.Model.Restaurant;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,6 +25,8 @@ public class FirebaseService {
     private static final String RESTAURANT_REFERENCE = "restaurants";
 
     private static final String AVIS_REFERENCE = "avis";
+
+    private static final String RESERVATION_REFERENCE = "reservation";
 
 
     private FirebaseDatabase firebaseDatabase;
@@ -89,6 +92,25 @@ public class FirebaseService {
         String avisKey = databaseReference.push().getKey();
         avis.setId(avisKey);
         databaseReference.child(avisKey).setValue(avis, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                if(error != null){
+                    dataCallBack.onError(error);
+
+                }else {
+                    String messageSuccess = "L'ajout de l'avis a ete correctement effectue en base";
+                    dataCallBack.onSuccess(messageSuccess);
+                }
+            }
+        });
+    }
+
+    public void createReservation(Reservation reservation, DataCallBack<String> dataCallBack){
+        DatabaseReference databaseReference = firebaseDatabase.getReference(RESERVATION_REFERENCE);
+        String referenceKey = databaseReference.push().getKey();
+        reservation.setId(referenceKey);
+
+        databaseReference.child(referenceKey).setValue(reservation, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                 if(error != null){
