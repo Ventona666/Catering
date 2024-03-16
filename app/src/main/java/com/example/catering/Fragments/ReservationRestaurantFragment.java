@@ -124,7 +124,6 @@ public class ReservationRestaurantFragment extends Fragment {
                     utilsService.replaceFragment(getParentFragmentManager(), new RestaurantDetailFragment(restaurant));
                     Log.d("Creation reservation", data);
                     Toast.makeText(getActivity().getApplicationContext(), "Réservation réussie", Toast.LENGTH_SHORT).show();
-
                 }
 
                 @Override
@@ -139,6 +138,10 @@ public class ReservationRestaurantFragment extends Fragment {
     }
 
     private void setDate(int year, int month, int day){
-        this.dateReservation = new Date(year, month, day);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        this.dateReservation = calendar.getTime();
     }
 }

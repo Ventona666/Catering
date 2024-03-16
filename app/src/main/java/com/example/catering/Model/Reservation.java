@@ -67,6 +67,8 @@ public class Reservation implements Serializable {
         this.restaurantId = restaurantId;
     }
 
+    public Reservation(){};
+
     @Override
     public String toString() {
         return "Reservation{" +

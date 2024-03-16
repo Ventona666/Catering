@@ -87,6 +87,33 @@ public class FirebaseService {
         });
     }
 
+    public void findRestaurandById(Long restaurantId, DataCallBack<Restaurant> dataCallBack){
+        DatabaseReference databaseReference = firebaseDatabase.getReference(RESTAURANT_REFERENCE);
+        Query query = databaseReference.orderByKey().equalTo(String.valueOf(restaurantId));
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Restaurant restaurant = snapshot.getValue(Restaurant.class);
+                        if (dataCallBack != null) {
+                            dataCallBack.onSuccess(restaurant);
+                        }
+                        return;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                if (dataCallBack != null) {
+                    dataCallBack.onError(error);
+                }
+            }
+        });
+    }
+
+
     public void createAvis(Avis avis, DataCallBack<String> dataCallBack){
         DatabaseReference databaseReference = firebaseDatabase.getReference(AVIS_REFERENCE);
         String avisKey = databaseReference.push().getKey();
@@ -119,6 +146,36 @@ public class FirebaseService {
                 }else {
                     String messageSuccess = "L'ajout de l'avis a ete correctement effectue en base";
                     dataCallBack.onSuccess(messageSuccess);
+                }
+            }
+        });
+    }
+
+    public void findReservationByNomAndPrenom(String nom, String prenom, DataCallBack<List<Reservation>> dataCallBack){
+        DatabaseReference databaseReference = firebaseDatabase.getReference(RESERVATION_REFERENCE);
+        Query query = databaseReference.orderByChild("nom").equalTo(nom);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Reservation> reservations = new ArrayList<>();
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Reservation reservation = snapshot.getValue(Reservation.class);
+                    if (reservation != null && reservation.getPrenom().equals(prenom)) {
+                        reservations.add(reservation);
+                    }
+                }
+
+                if (dataCallBack != null) {
+                    dataCallBack.onSuccess(reservations);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                if (dataCallBack != null) {
+                    dataCallBack.onError(error);
                 }
             }
         });

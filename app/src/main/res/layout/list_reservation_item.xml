@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="12dp"
+    android:layout_marginEnd="12dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="8dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="270dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginVertical="8dp"
+            android:id="@+id/listReservationItemName"
+            android:textSize="20sp"
+            android:text="@string/restaurant"
+            android:textColor="@color/primary">
+        </TextView>
+
+        <TextView
+            android:layout_width="270dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="35dp"
+            android:id="@+id/address_reservation"
+            android:textSize="12sp"
+            android:text="@string/address"
+            android:textColor="@color/black">
+        </TextView>
+
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginBottom="8dp"
+            android:id="@+id/date_reservation"
+            android:textSize="20sp"
+            android:text="@string/date"
+            android:layout_below="@+id/address_reservation"
+            android:textColor="@color/black">
+        </TextView>
+
+        <TextView
+            android:layout_width="25dp"
+            android:layout_height="30dp"
+            android:id="@+id/nb_personne_reservation"
+            android:textSize="20sp"
+            android:text="10"
+            android:layout_toEndOf="@+id/date_reservation"
+            android:layout_below="@id/address_reservation"
+            android:textColor="@color/black">
+        </TextView>
+
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="30dp"
+            android:textSize="20sp"
+            android:text="@string/personne_s"
+            android:layout_toEndOf="@+id/nb_personne_reservation"
+            android:layout_below="@id/address_reservation"
+            android:textColor="@color/black">
+        </TextView>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
