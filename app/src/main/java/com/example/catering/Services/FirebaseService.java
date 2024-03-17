@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import com.example.catering.Common.DataCallBack;
 import com.example.catering.Common.DataCallBackImage;
 import com.example.catering.Model.Avis;
+import com.example.catering.Model.Reservation;
 import com.example.catering.Model.Restaurant;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,6 +37,8 @@ public class FirebaseService {
     private static final String RESTAURANT_REFERENCE = "restaurants";
 
     private static final String AVIS_REFERENCE = "avis";
+
+    private static final String RESERVATION_REFERENCE = "reservation";
 
 
     private FirebaseDatabase firebaseDatabase;
@@ -99,6 +102,33 @@ public class FirebaseService {
             }
         });
     }
+
+    public void findRestaurandById(Long restaurantId, DataCallBack<Restaurant> dataCallBack){
+        DatabaseReference databaseReference = firebaseDatabase.getReference(RESTAURANT_REFERENCE);
+        Query query = databaseReference.orderByKey().equalTo(String.valueOf(restaurantId));
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Restaurant restaurant = snapshot.getValue(Restaurant.class);
+                        if (dataCallBack != null) {
+                            dataCallBack.onSuccess(restaurant);
+                        }
+                        return;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                if (dataCallBack != null) {
+                    dataCallBack.onError(error);
+                }
+            }
+        });
+    }
+
 
     public void createAvis(Avis avis, DataCallBack<String> dataCallBack){
         DatabaseReference databaseReference = firebaseDatabase.getReference(AVIS_REFERENCE);
@@ -166,5 +196,54 @@ public class FirebaseService {
                 }
             });
         }
+    }
+
+    public void createReservation(Reservation reservation, DataCallBack<String> dataCallBack){
+        DatabaseReference databaseReference = firebaseDatabase.getReference(RESERVATION_REFERENCE);
+        String referenceKey = databaseReference.push().getKey();
+        reservation.setId(referenceKey);
+
+        databaseReference.child(referenceKey).setValue(reservation, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                if(error != null){
+                    dataCallBack.onError(error);
+
+                }else {
+                    String messageSuccess = "L'ajout de l'avis a ete correctement effectue en base";
+                    dataCallBack.onSuccess(messageSuccess);
+                }
+            }
+        });
+    }
+
+    public void findReservationByNomAndPrenom(String nom, String prenom, DataCallBack<List<Reservation>> dataCallBack){
+        DatabaseReference databaseReference = firebaseDatabase.getReference(RESERVATION_REFERENCE);
+        Query query = databaseReference.orderByChild("nom").equalTo(nom);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Reservation> reservations = new ArrayList<>();
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Reservation reservation = snapshot.getValue(Reservation.class);
+                    if (reservation != null && reservation.getPrenom().equals(prenom)) {
+                        reservations.add(reservation);
+                    }
+                }
+
+                if (dataCallBack != null) {
+                    dataCallBack.onSuccess(reservations);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                if (dataCallBack != null) {
+                    dataCallBack.onError(error);
+                }
+            }
+        });
     }
 }

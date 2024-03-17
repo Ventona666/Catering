@@ -7,4 +7,7 @@
     <string name="restaurant">Restaurant</string>
     <string name="address">Address</string>
     <string name="voir_plus">Voir plus</string>
+    <string name="date">Date</string>
+    <string name="nombre_personnes">Nombre personnes</string>
+    <string name="personne_s">personne(s)</string>
 </resources>
