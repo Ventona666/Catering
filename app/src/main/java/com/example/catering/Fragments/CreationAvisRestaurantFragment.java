@@ -1,6 +1,9 @@
 package com.example.catering.Fragments;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -10,11 +13,13 @@ import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -23,9 +28,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.catering.Common.DataCallBack;
 import com.example.catering.Common.DataCallBackImage;
@@ -37,6 +42,8 @@ import com.example.catering.Services.UtilsService;
 import com.example.catering.Utils.ListImageDeleteButtonAdapter;
 import com.google.firebase.database.DatabaseError;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -62,10 +69,6 @@ public class CreationAvisRestaurantFragment extends Fragment {
 
     private EditText formElementCommentaire;
 
-    private ImageView photo1;
-
-    private ImageView photo2;
-
     private RecyclerView listeImageDeleteButton;
 
     private List<Uri> listeUriPhoto = new ArrayList<>();
@@ -79,6 +82,10 @@ public class CreationAvisRestaurantFragment extends Fragment {
     private int nbPhotos;
 
     private ActivityResultLauncher<String> galerieLauncher;
+
+    private ActivityResultLauncher<Intent> appareilPhotoLauncher;
+
+    private ActivityResultLauncher<String> requestPermissionLauncher;
 
     private UtilsService utilsService = new UtilsService();
 
@@ -113,6 +120,8 @@ public class CreationAvisRestaurantFragment extends Fragment {
         formElementNomUtilisateur = view.findViewById(R.id.formNomUtilisateur);
         formElementCommentaire = view.findViewById(R.id.formCommentaire);
         initGalerieLauncher(view);
+        initAppareilPhotoLauncher(view);
+        initRequestPermissionLauncher();
         setTextLabelPhotos(view);
 
         envoyerAvisButton = view.findViewById(R.id.envoyer_avis_button);
@@ -147,6 +156,7 @@ public class CreationAvisRestaurantFragment extends Fragment {
 
         envoyerAvisButton.setOnClickListener(onClickEnvoyerAvisButton());
         galerieButton.setOnClickListener(onClickGalerieButton());
+        appareilPhotoButton.setOnClickListener(onClickAppareilPhotoButton());
 
         //Notes
         final ImageView star1 = view.findViewById(R.id.star1);
@@ -184,14 +194,66 @@ public class CreationAvisRestaurantFragment extends Fragment {
     private void initGalerieLauncher(View view){
         galerieLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
                 uri -> {
-                      ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
-                      adapter.add(uri);
-                      nbPhotos++;
-                      setTextLabelPhotos(view);
-                      if(adapter.getListeImagesUri().size() > 1){
-                          maskPhotoButtons();
+                      if(uri != null){
+                          ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
+                          adapter.add(uri);
+                          nbPhotos++;
+                          setTextLabelPhotos(view);
+                          if(adapter.getListeImagesUri().size() > 1){
+                              maskPhotoButtons();
+                          }
                       }
                 });
+    }
+
+    private void initAppareilPhotoLauncher(View view){
+        appareilPhotoLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    Intent data = result.getData();
+                    if (data != null && data.getExtras() != null) {
+                        Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+
+                        File cacheDir = getContext().getCacheDir();
+                        File imageFile = new File(cacheDir, "temp_image" + UUID.randomUUID() + ".jpg");
+                        saveBitmapToFile(imageBitmap, imageFile);
+
+                        ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
+                        adapter.add(Uri.fromFile(imageFile));
+                        nbPhotos++;
+                        setTextLabelPhotos(view);
+                        if (adapter.getListeImagesUri().size() > 1) {
+                            maskPhotoButtons();
+                        }
+
+                    }
+                });
+    }
+
+    private void initRequestPermissionLauncher(){
+        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        appareilPhotoLauncher.launch(takePictureIntent);
+                    } else {
+                        Toast.makeText(getContext(), "Permission de la caméra refusée", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void saveBitmapToFile(Bitmap bitmap, File file) {
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void requestCameraPermission() {
+        requestPermissionLauncher.launch(Manifest.permission.CAMERA);
     }
 
     //utils methods
@@ -315,7 +377,7 @@ public class CreationAvisRestaurantFragment extends Fragment {
                 firebaseService.createAvis(avis, new DataCallBack<String>() {
                     @Override
                     public void onSuccess(String data) {
-                        utilsService.replaceFragment(getParentFragmentManager(), new RestaurantDetailFragment(restaurant));
+                        utilsService.replaceFragment(getParentFragmentManager(), new HomeFragment());
                         Log.d("Creation avis", data);
                     }
 
@@ -348,5 +410,22 @@ public class CreationAvisRestaurantFragment extends Fragment {
             }
         };
     }
+
+    private View.OnClickListener onClickAppareilPhotoButton(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestCameraPermission();
+                } else {
+                    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    appareilPhotoLauncher.launch(takePictureIntent);
+                }
+            }
+        };
+    }
+
+
 
 }
