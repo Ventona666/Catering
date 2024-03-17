@@ -19,11 +19,11 @@ import java.util.List;
 public class ListImageAdapter extends RecyclerView.Adapter<ListImageAdapter.ImageViewHolder> {
 
     private Context context;
-    private List<Uri> listeImagesUri;
+    private List<?> listeImagesPath;
 
-    public ListImageAdapter(Context context, List<Uri> listeImagesUri) {
+    public ListImageAdapter(Context context, List<?> listeImagesPath) {
         this.context = context;
-        this.listeImagesUri = listeImagesUri;
+        this.listeImagesPath = listeImagesPath;
     }
 
     @NonNull
@@ -35,15 +35,23 @@ public class ListImageAdapter extends RecyclerView.Adapter<ListImageAdapter.Imag
 
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
-        Uri uri = listeImagesUri.get(position);
-        Glide.with(context)
-                .load(uri)
-                .into(holder.imageView);
+        if(isListOfUris(listeImagesPath)){
+            Uri uri = (Uri) listeImagesPath.get(position);
+            Glide.with(context)
+                    .load(uri)
+                    .into(holder.imageView);
+        }else {
+            String path = (String) listeImagesPath.get(position);
+            Glide.with(context)
+                    .load(path)
+                    .into(holder.imageView);
+        }
+        
     }
 
     @Override
     public int getItemCount() {
-        return listeImagesUri.size();
+        return listeImagesPath.size();
     }
 
     public static class ImageViewHolder extends RecyclerView.ViewHolder {
@@ -53,5 +61,14 @@ public class ListImageAdapter extends RecyclerView.Adapter<ListImageAdapter.Imag
             super(itemView);
             imageView = itemView.findViewById(R.id.photo);
         }
+    }
+
+    private boolean isListOfUris(List<?> list) {
+        for (Object obj : list) {
+            if (!(obj instanceof Uri)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

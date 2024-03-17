@@ -1,7 +1,10 @@
 package com.example.catering.Fragments;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -11,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.provider.MediaStore;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -34,10 +37,14 @@ import com.example.catering.Services.UtilsService;
 import com.example.catering.Utils.ListImageDeleteButtonAdapter;
 import com.google.firebase.database.DatabaseError;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -207,9 +214,64 @@ public class CreationAvisRestaurantFragment extends Fragment {
     }
 
     private String generateRandomPath(){
-        return "images/avis?restaurantId=" + this.restaurant.getId() + "&photoId=" + UUID.randomUUID() +  "/photo.jpg";
+        return "photo" + UUID.randomUUID() + ".jpg";
     }
 
+    public boolean saveImageInLocalStorage(Drawable imageDrawable, String fileName) {
+        String filePath = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" + fileName;
+        BitmapDrawable drawable = (BitmapDrawable) imageDrawable;
+        Bitmap image = drawable.getBitmap();
+        OutputStream os = null;
+        try {
+            os = Files.newOutputStream(Paths.get(filePath));
+            image.compress(Bitmap.CompressFormat.JPEG, 100, os);
+            os.flush();
+
+            //Ajout des informations dans les métadonnées
+            ExifInterface exif = new ExifInterface(filePath);
+            exif.setAttribute(ExifInterface.TAG_MAKE, removeAccents(this.restaurant.getNom()));
+
+            String latitude = formatCoordinate(this.restaurant.getLat());
+            String longitude = formatCoordinate(this.restaurant.getLon());
+            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, latitude);
+            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, (this.restaurant.getLat() >= 0) ? "N" : "S");
+            exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, longitude);
+            exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, (this.restaurant.getLon() >= 0) ? "E" : "W");
+
+            exif.saveAttributes();
+
+            return true;
+        } catch (IOException e) {
+            Log.e("Erreur stockage", "Erreur lors de la sauvegarde de l'image : " + e.getMessage());
+            return false;
+        } finally {
+            try {
+                if (os != null) {
+                    os.close();
+                }
+            } catch (IOException e) {
+                Log.e("Erreur fermeture stockage", "Erreur lors de la fermeture du flux de sortie : " + e.getMessage());
+            }
+        }
+    }
+
+    public String formatCoordinate(double coordinate) {
+        double absCoordinate = Math.abs(coordinate);
+        int degrees = (int) absCoordinate;
+        double minutes = (absCoordinate - degrees) * 60;
+        int minutesInt = (int) minutes;
+        double seconds = (minutes - minutesInt) * 60;
+        int secondsInt = (int) seconds;
+
+        String secondsString = String.format("%02d", secondsInt);
+
+        return String.format("%d/1,%d/1,%s/100", degrees, minutesInt, secondsString);
+    }
+
+    private String removeAccents(String text) {
+        return Normalizer.normalize(text, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+    }
 
     //Listeners
     private View.OnClickListener onClickEnvoyerAvisButton(){
@@ -236,6 +298,7 @@ public class CreationAvisRestaurantFragment extends Fragment {
                 for(int i = 0; i < adapter.getItemCount(); i++){
                     Uri uri = adapter.getListeImagesUri().get(i);
                     String url = photosUrl.get(i);
+                    saveImageInLocalStorage(adapter.getImageDrawable(uri), url);
                     firebaseService.saveImage(url, adapter.getImageDrawable(uri), new DataCallBackImage<String>() {
                         @Override
                         public void onSuccess(String data) {
