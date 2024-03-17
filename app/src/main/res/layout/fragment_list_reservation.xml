@@ -7,30 +7,21 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/nom_restaurant_reservation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="15dp"
         android:paddingTop="15dp"
-        android:text="Nom restaurant"
+        android:text="Mes réservations"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="@color/primary"
         android:textSize="25sp"
         android:textStyle="bold"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:text="Réservation"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Nom"
-        android:id="@+id/nom"
+        android:id="@+id/nomRechercheReservation"
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
         android:autofillHints="name"
@@ -40,39 +31,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Prenom"
-        android:id="@+id/prenom"
+        android:id="@+id/prenomRechercheReservation"
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp" />
 
-    <CalendarView
-        android:id="@+id/calendarViewReservation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <TextView
-        android:id="@+id/nb_personnes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:text="Nombre de personnes :"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <Spinner
-        android:id="@+id/spinnerNbPersonnes"
-        android:layout_width="169dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="15dp" />
-
     <Button
-        android:id="@+id/buttonConfirmerReservation"
+        android:id="@+id/buttonRechercherReservation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:backgroundTint="@color/primary"
         android:insetLeft="15dp"
         android:insetRight="15dp"
-        android:text="Confirmer la réservation" />
+        android:text="Rechercher" />
 
-
+    <ListView
+        android:id="@+id/list_reservation_item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="3dp"
+        tools:listitem="@layout/list_reservation_item"
+        android:dividerHeight="8dp"
+        android:divider="@android:color/transparent"/>
 </LinearLayout>
