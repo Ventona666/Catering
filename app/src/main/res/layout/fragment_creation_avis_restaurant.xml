@@ -1,236 +1,202 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragments.CreationAvisRestaurantFragment">
 
-    <TextView
-        android:id="@+id/labelNomUtilisateur"
+    <ScrollView
+        android:id="@+id/globalContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="15dp"
-        android:paddingTop="16dp"
-        android:text="Nom"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="@color/primary"
-        android:textSize="20sp"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <EditText
-        android:id="@+id/formNomUtilisateur"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/labelNomUtilisateur" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/labelCommentaire"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="15dp"
-        android:paddingTop="16dp"
-        android:text="Commentaire"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="@color/primary"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/formNomUtilisateur" />
+            <TextView
+                android:id="@+id/labelNomUtilisateur"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingTop="16dp"
+                android:text="Nom"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/primary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/formCommentaire"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:gravity="top"
-        android:inputType="textMultiLine"
-        android:lines="5"
-        android:scrollbars="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/labelCommentaire" />
+            <EditText
+                android:id="@+id/formNomUtilisateur"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/labelNomUtilisateur" />
 
-    <TextView
-        android:id="@+id/labelNote"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="15dp"
-        android:paddingTop="16dp"
-        android:text="Note"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="@color/primary"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/formCommentaire" />
+            <TextView
+                android:id="@+id/labelCommentaire"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingTop="16dp"
+                android:text="Commentaire"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/primary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/formNomUtilisateur" />
 
-    <com.google.android.flexbox.FlexboxLayout
-        android:id="@+id/noteContainer"
-        android:layout_width="175dp"
-        android:layout_height="wrap_content"
-        android:paddingStart="15dp"
-        android:paddingTop="5dp"
-        android:paddingBottom="10dp"
-        app:justifyContent="space_between"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/labelNote">
+            <EditText
+                android:id="@+id/formCommentaire"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:gravity="top"
+                android:inputType="textMultiLine"
+                android:lines="3"
+                android:scrollbars="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/labelCommentaire" />
 
-        <ImageView
-            android:id="@+id/star1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/empty_star" />
+            <TextView
+                android:id="@+id/labelNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingTop="16dp"
+                android:text="Note"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/primary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/formCommentaire" />
 
-        <ImageView
-            android:id="@+id/star2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/empty_star" />
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/noteContainer"
+                android:layout_width="175dp"
+                android:layout_height="wrap_content"
+                android:paddingStart="15dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="10dp"
+                app:justifyContent="space_between"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/labelNote">
 
-        <ImageView
-            android:id="@+id/star3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/empty_star" />
+                <ImageView
+                    android:id="@+id/star1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/empty_star" />
 
-        <ImageView
-            android:id="@+id/star4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/empty_star" />
+                <ImageView
+                    android:id="@+id/star2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/empty_star" />
 
-        <ImageView
-            android:id="@+id/star5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/empty_star" />
-    </com.google.android.flexbox.FlexboxLayout>
+                <ImageView
+                    android:id="@+id/star3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/empty_star" />
 
-    <TextView
-        android:id="@+id/labelPhotos"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="15dp"
-        android:paddingTop="16dp"
-        android:text="Photos"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="@color/primary"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/noteContainer" />
+                <ImageView
+                    android:id="@+id/star4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/empty_star" />
 
-    <com.google.android.flexbox.FlexboxLayout
-        android:id="@+id/boutonsPhotosContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingStart="15dp"
-        android:paddingEnd="10dp"
-        android:paddingBottom="10dp"
-        android:paddingTop="5dp"
-        app:alignContent="flex_start"
-        app:alignItems="center"
-        app:justifyContent="space_between"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/labelPhotos" >
+                <ImageView
+                    android:id="@+id/star5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/empty_star" />
+            </com.google.android.flexbox.FlexboxLayout>
 
-        <Button
-            android:id="@+id/galerie_photo_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/primary"
-            android:layout_marginRight="10dp"
-            android:text="Galerie"
-            android:drawableRight="@drawable/ic_galerie"/>
+            <TextView
+                android:id="@+id/labelPhotos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingTop="16dp"
+                android:text="Photos"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/primary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/noteContainer" />
 
-        <Button
-            android:id="@+id/appareil_photo_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/primary"
-            android:text="Appareil Photo"
-            android:drawableRight="@drawable/ic_camera"/>
-
-    </com.google.android.flexbox.FlexboxLayout>
-
-    <com.google.android.flexbox.FlexboxLayout
-        android:id="@+id/photosContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingStart="15dp"
-        android:paddingEnd="10dp"
-        android:paddingBottom="10dp"
-        android:paddingTop="5dp"
-        app:alignContent="flex_start"
-        app:alignItems="center"
-        app:justifyContent="space_between"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/boutonsPhotosContainer" >
-
-        <com.google.android.flexbox.FlexboxLayout
-            android:id="@+id/photo1Container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            app:alignItems="center"
-            app:justifyContent="space_between"
-            app:flexDirection="column">
-
-            <ImageView
-                android:id="@+id/photo1"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginBottom="5dp"/>
-            <Button
-                android:id="@+id/suppPhoto1Button"
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/boutonsPhotosContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/red"
-                android:text="Supprimer"
-                android:drawableRight="@drawable/ic_delete"/>
+                android:paddingStart="15dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="10dp"
+                android:paddingTop="5dp"
+                app:alignContent="flex_start"
+                app:alignItems="center"
+                app:justifyContent="space_between"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/labelPhotos" >
 
-        </com.google.android.flexbox.FlexboxLayout>
+                <Button
+                    android:id="@+id/galerie_photo_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/primary"
+                    android:layout_marginRight="10dp"
+                    android:text="Galerie"
+                    android:drawableRight="@drawable/ic_galerie"/>
 
-        <com.google.android.flexbox.FlexboxLayout
-            android:id="@+id/photo2Container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            app:alignItems="center"
-            app:justifyContent="space_between"
-            app:flexDirection="column">
+                <Button
+                    android:id="@+id/appareil_photo_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/primary"
+                    android:text="Appareil Photo"
+                    android:drawableRight="@drawable/ic_camera"/>
 
-            <ImageView
-                android:id="@+id/photo2"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginBottom="5dp"/>
+            </com.google.android.flexbox.FlexboxLayout>
 
-            <Button
-                android:id="@+id/suppPhoto2Button"
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/listImageDeleteButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/red"
-                android:text="Supprimer"
-                android:drawableRight="@drawable/ic_delete" />
+                android:layout_marginLeft="15dp"
+                tools:listitem="@layout/list_image_avis_item"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/boutonsPhotosContainer"/>
 
-        </com.google.android.flexbox.FlexboxLayout>
 
 
-    </com.google.android.flexbox.FlexboxLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 
     <Button
         android:id="@+id/envoyer_avis_button"
@@ -244,8 +210,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/formCommentaire"
+        app:layout_constraintTop_toBottomOf="@+id/globalContainer"
         app:layout_constraintVertical_bias="1.0" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
