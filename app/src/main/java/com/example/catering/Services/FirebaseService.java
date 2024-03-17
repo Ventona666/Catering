@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,7 +27,6 @@ import com.google.firebase.storage.StorageReference;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class FirebaseService {
     private static final String URL_DATABASE = "https://catering-bdd-default-rtdb.europe-west1.firebasedatabase.app";
@@ -145,23 +143,6 @@ public class FirebaseService {
                 });
 
     }
-
-//    public void getAllUriImageAvis(List<String> url, DataCallBackImage<Uri> dataCallBack){
-//        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(url);
-//        Log.d("Valeur de url : ", url);
-//        // Get the download URL of the image
-//        storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//            @Override
-//            public void onSuccess(Uri uri) {
-//                dataCallBack.onSuccess(uri);
-//            }
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception exception) {
-//                dataCallBack.onError(exception.getMessage());
-//            }
-//        });
-//    }
 
     public void getAllUriImageAvis(List<String> urls, final DataCallBackImage<List<Uri>> dataCallBack) {
         final List<Uri> uris = new ArrayList<>();

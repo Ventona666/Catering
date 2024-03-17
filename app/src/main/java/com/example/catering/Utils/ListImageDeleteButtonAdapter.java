@@ -3,7 +3,6 @@ package com.example.catering.Utils;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,6 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.catering.R;
 
 import java.util.HashMap;
@@ -44,7 +42,6 @@ public class ListImageDeleteButtonAdapter extends RecyclerView.Adapter<ListImage
     @Override
     public void onBindViewHolder(@NonNull ImageDeleteButtonViewHolder holder, int position) {
         Uri uri = listeImagesUri.get(position);
-        Log.d("debug ", "je passe");
         holder.imageView.setImageURI(uri);
         drawableMap.put(uri, holder.imageView.getDrawable());
 
@@ -72,10 +69,8 @@ public class ListImageDeleteButtonAdapter extends RecyclerView.Adapter<ListImage
     }
 
     public void add(Uri uri) {
-        Log.d("debug ", "je passe dans le add");
         listeImagesUri.add(uri);
         notifyDataSetChanged();
-        Log.d("debug ", "je passe dans le add : " + listeImagesUri.get(listeImagesUri.size()-1));
     }
 
     public void deleteItem(int position) {
