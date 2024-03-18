@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imageToFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_launcher_background"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        android:padding="8dp"
+        android:layout_alignParentTop="true"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/imageToFilter">
+
+        <RadioButton
+            android:id="@+id/radioButtonBrightness"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Luminosité"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonSaturation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Saturation"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonAucun"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aucun"/>
+
+    </RadioGroup>
+
+    <LinearLayout
+        android:id="@+id/buttonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/buttonCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/primary"
+            android:text="Annuler"/>
+
+        <Button
+            android:id="@+id/buttonApply"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/primary"
+            android:text="Appliquer"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -177,6 +177,8 @@ public class CreationAvisRestaurantFragment extends Fragment {
     private void initGalerieLauncher(View view){
         galerieLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
                 uri -> {
+                    FilterEffectFragment filterEffectFragment = FilterEffectFragment.newInstance(uri);
+                    filterEffectFragment.show(getChildFragmentManager(), "filter_dialog");
                       ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
                       adapter.add(uri);
                       nbPhotos++;
