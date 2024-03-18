@@ -1,9 +1,13 @@
 package com.example.catering.Fragments;
 
 import android.app.Service;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -15,20 +19,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RadioButton;
+
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
+
 
 import com.example.catering.R;
-import com.mukesh.image_processing.ImageProcessor;
+
+import java.io.InputStream;
 
 public class FilterEffectFragment extends DialogFragment implements SensorEventListener {
     private static final String ARG_IMAGE_URI = "image_uri";
+    private Uri uri;
 
     private ImageView imageToFilter;
     private RadioGroup radioGroup;
@@ -51,6 +57,10 @@ public class FilterEffectFragment extends DialogFragment implements SensorEventL
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        if (getArguments() != null) {
+            // Récupérer l'URI de l'image à partir des arguments
+            uri = getArguments().getParcelable(ARG_IMAGE_URI);
+        }
 
         View view = inflater.inflate(R.layout.fragment_filtre, container, false);
 
@@ -61,7 +71,6 @@ public class FilterEffectFragment extends DialogFragment implements SensorEventL
 
         sensorManager = (SensorManager) getActivity().getSystemService(Service.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-
         return view;
     }
 
@@ -108,20 +117,41 @@ public class FilterEffectFragment extends DialogFragment implements SensorEventL
         int checkedRadioButtonId = radioGroup.getCheckedRadioButtonId();
 
         if (checkedRadioButtonId == R.id.radioButtonBrightness) {
-            //applyBrightnessFilter();
+            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         } else if (checkedRadioButtonId == R.id.radioButtonSaturation) {
-            applySaturationFilter();
+            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         }
     }
 
-    private void applyBrightnessFilter(float lux) {
-        BitmapDrawable drawable = (BitmapDrawable) imageToFilter.getDrawable();
-        Bitmap bitmap = drawable.getBitmap();
-        Bitmap image = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+    public static Bitmap applyBrightness(Context context, Uri uri, float brightnessLevel) {
+        Bitmap bitmap = null;
+        try {
+            InputStream inputStream = context.getContentResolver().openInputStream(uri);
+            bitmap = BitmapFactory.decodeStream(inputStream);
 
-        ImageProcessor imageProcessor = new ImageProcessor();
-        image = imageProcessor.doBrightness(image, 10);
-        imageToFilter.setImageBitmap(image);
+            ColorMatrix colorMatrix = new ColorMatrix();
+            colorMatrix.set(new float[] {
+                    1, 0, 0, 0, brightnessLevel,
+                    0, 1, 0, 0, brightnessLevel,
+                    0, 0, 1, 0, brightnessLevel,
+                    0, 0, 0, 1, 0
+            });
+
+            Paint paint = new Paint();
+            paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
+
+            Bitmap resultBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(resultBitmap);
+            canvas.drawBitmap(bitmap, 0, 0, paint);
+
+            bitmap.recycle();
+
+            return resultBitmap;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     private void applySaturationFilter() {
@@ -129,8 +159,17 @@ public class FilterEffectFragment extends DialogFragment implements SensorEventL
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        System.out.println(event.values[0]);
         if (event.sensor.getType() == Sensor.TYPE_LIGHT){
-            applyBrightnessFilter(event.values[0]);
+
+            Bitmap bitmap = applyBrightness(getContext(), uri, event.values[0]/10);
+            imageToFilter.setImageBitmap(bitmap);
+        }
+        else if (event.sensor.getType() == Sensor.TYPE_PROXIMITY){
+
+
+            Bitmap bitmap = applyBrightness(getContext(), uri, event.values[0]);
+            imageToFilter.setImageBitmap(bitmap);
         }
     }
 
