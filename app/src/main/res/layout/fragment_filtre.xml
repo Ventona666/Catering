@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
         android:id="@+id/imageToFilter"
@@ -10,8 +11,17 @@
         android:src="@drawable/ic_launcher_background"
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
-        android:padding="8dp"
         android:layout_alignParentTop="true"/>
+
+    <com.example.catering.Views.StickerView
+        android:id="@+id/stickerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/imageToFilter"
+        android:layout_alignBottom="@id/imageToFilter"
+        android:layout_alignLeft="@id/imageToFilter"
+        android:layout_alignRight="@id/imageToFilter"/>
+
 
     <RadioGroup
         android:id="@+id/radioGroup"
@@ -39,6 +49,75 @@
             android:text="Aucun"/>
 
     </RadioGroup>
+
+    <TextView
+        android:id="@+id/labelStickers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:paddingLeft="15dp"
+        android:text="Stickers"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/primary"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_below="@id/radioGroup"/>
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/stickersContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:paddingStart="15dp"
+        android:paddingTop="0dp"
+        app:alignItems="flex_start"
+        app:justifyContent="space_between"
+        android:layout_below="@id/labelStickers">
+
+        <ImageView
+            android:id="@+id/bisouSticker"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/embrasser" />
+
+        <ImageView
+            android:id="@+id/funSticker"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/emojifun" />
+
+        <ImageView
+            android:id="@+id/citrouilleSticker"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/emoji" />
+
+        <ImageView
+            android:id="@+id/rireSticker"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/rire" />
+
+        <ImageView
+            android:id="@+id/diableSticker"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/diable" />
+    </com.google.android.flexbox.FlexboxLayout>
+
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/stickersContainer"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="15dp"
+        android:backgroundTint="@color/red"
+        android:drawableRight="@drawable/ic_delete"
+        android:text="Supprimer le dernier sticker" />
 
     <LinearLayout
         android:id="@+id/buttonsLayout"
