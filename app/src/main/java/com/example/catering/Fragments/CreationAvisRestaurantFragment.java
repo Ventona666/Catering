@@ -193,16 +193,20 @@ public class CreationAvisRestaurantFragment extends Fragment {
 
     private void initGalerieLauncher(View view){
         galerieLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
-                uri -> {
-                      if(uri != null){
-                          ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
-                          adapter.add(uri);
-                          nbPhotos++;
-                          setTextLabelPhotos(view);
-                          if(adapter.getListeImagesUri().size() > 1){
-                              maskPhotoButtons();
-                          }
-                      }
+                resultUri -> {
+                    FilterEffectFragment filterEffectFragment = FilterEffectFragment.newInstance(resultUri, new FilterEffectFragment.OnFilterAppliedListener() {
+                        @Override
+                        public void onFilterApplied(Uri uri) {
+                            ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
+                            adapter.add(uri);
+                            nbPhotos++;
+                            setTextLabelPhotos(view);
+                            if(adapter.getListeImagesUri().size() > 1){
+                                maskPhotoButtons();
+                            }
+                        }
+                    });
+                    filterEffectFragment.show(getChildFragmentManager(), "filter_dialog");
                 });
     }
 
