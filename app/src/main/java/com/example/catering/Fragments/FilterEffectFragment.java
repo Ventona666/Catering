@@ -44,9 +44,9 @@ import java.util.UUID;
 public class FilterEffectFragment extends DialogFragment implements SensorEventListener {
     private static final String ARG_IMAGE_URI = "image_uri";
 
-    private static final int STICKER_WIDTH = 150;
+    private static final int STICKER_WIDTH = 140;
 
-    private static final int STICKER_HEIGHT= 150;
+    private static final int STICKER_HEIGHT= 140;
     private Uri uri;
 
     private ImageView imageToFilter;
@@ -125,8 +125,7 @@ public class FilterEffectFragment extends DialogFragment implements SensorEventL
         buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Action à effectuer lorsque le bouton Annuler est cliqué
-                Toast.makeText(getActivity(), "Annuler", Toast.LENGTH_SHORT).show();
+                dismiss();
             }
         });
 
@@ -135,7 +134,6 @@ public class FilterEffectFragment extends DialogFragment implements SensorEventL
             public void onClick(View v) {
                 Uri uri = createUriForTransformedImage();
                 sendUriToParentFragment(uri);
-                Toast.makeText(getActivity(), "Appliquer", Toast.LENGTH_SHORT).show();
                 dismiss();
             }
         });
