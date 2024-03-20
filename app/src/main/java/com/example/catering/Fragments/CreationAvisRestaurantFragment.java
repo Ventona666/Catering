@@ -2,6 +2,7 @@ package com.example.catering.Fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -75,9 +77,15 @@ public class CreationAvisRestaurantFragment extends Fragment {
 
     private Button envoyerAvisButton;
 
+    private Button galerieButton;
+
     private Button appareilPhotoButton;
 
     private int nbPhotos;
+
+    private Uri imageTempUri;
+
+    private ActivityResultLauncher<String> galerieLauncher;
 
     private ActivityResultLauncher<Intent> appareilPhotoLauncher;
 
@@ -115,12 +123,14 @@ public class CreationAvisRestaurantFragment extends Fragment {
         nbPhotos = 0 ;
         formElementNomUtilisateur = view.findViewById(R.id.formNomUtilisateur);
         formElementCommentaire = view.findViewById(R.id.formCommentaire);
+        initGalerieLauncher(view);
         initAppareilPhotoLauncher(view);
         initRequestPermissionLauncher();
         setTextLabelPhotos(view);
 
         envoyerAvisButton = view.findViewById(R.id.envoyer_avis_button);
         envoyerAvisButton.setEnabled(false);
+        galerieButton = view.findViewById(R.id.galerie_photo_button);
         appareilPhotoButton = view.findViewById(R.id.appareil_photo_button);
 
         listeImageDeleteButton = view.findViewById(R.id.listImageDeleteButton);
@@ -135,7 +145,7 @@ public class CreationAvisRestaurantFragment extends Fragment {
                     nbPhotos--;
                     setTextLabelPhotos(view);
                     if(!adapter.getListeImagesUri().isEmpty()){
-                        displayPhotoButton();
+                        displayPhotoButtons();
                     }
                 }
 
@@ -149,6 +159,7 @@ public class CreationAvisRestaurantFragment extends Fragment {
         formElementCommentaire.addTextChangedListener(textWatcher);
 
         envoyerAvisButton.setOnClickListener(onClickEnvoyerAvisButton());
+        galerieButton.setOnClickListener(onClickGalerieButton());
         appareilPhotoButton.setOnClickListener(onClickAppareilPhotoButton());
 
         //Notes
@@ -184,18 +195,11 @@ public class CreationAvisRestaurantFragment extends Fragment {
         };
     }
 
-    private void initAppareilPhotoLauncher(View view){
-        appareilPhotoLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    Intent data = result.getData();
-                    if (data != null && data.getExtras() != null) {
-                        Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
-
-                        File cacheDir = getContext().getCacheDir();
-                        File imageFile = new File(cacheDir, "temp_image" + UUID.randomUUID() + ".jpg");
-                        saveBitmapToFile(imageBitmap, imageFile);
-
-                        FilterEffectFragment filterEffectFragment = FilterEffectFragment.newInstance(Uri.fromFile(imageFile), new FilterEffectFragment.OnFilterAppliedListener() {
+    private void initGalerieLauncher(View view){
+        galerieLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
+                resultUri -> {
+                    if(resultUri != null){
+                        FilterEffectFragment filterEffectFragment = FilterEffectFragment.newInstance(resultUri, new FilterEffectFragment.OnFilterAppliedListener() {
                             @Override
                             public void onFilterApplied(Uri uri) {
                                 ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
@@ -203,7 +207,29 @@ public class CreationAvisRestaurantFragment extends Fragment {
                                 nbPhotos++;
                                 setTextLabelPhotos(view);
                                 if(adapter.getListeImagesUri().size() > 1){
-                                    maskPhotoButton();
+                                    maskPhotoButtons();
+                                }
+                            }
+                        });
+                        filterEffectFragment.show(getChildFragmentManager(), "filter_dialog");
+                    }
+
+                });
+    }
+
+    private void initAppareilPhotoLauncher(View view){
+        appareilPhotoLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        FilterEffectFragment filterEffectFragment = FilterEffectFragment.newInstance(imageTempUri, new FilterEffectFragment.OnFilterAppliedListener() {
+                            @Override
+                            public void onFilterApplied(Uri uri) {
+                                ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
+                                adapter.add(uri);
+                                nbPhotos++;
+                                setTextLabelPhotos(view);
+                                if(adapter.getListeImagesUri().size() > 1){
+                                    maskPhotoButtons();
                                 }
                             }
                         });
@@ -218,6 +244,10 @@ public class CreationAvisRestaurantFragment extends Fragment {
                 isGranted -> {
                     if (isGranted) {
                         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        File cacheDir = getContext().getCacheDir();;
+                        File imageFile = new File(cacheDir, "temp_image" + UUID.randomUUID() + ".jpg");
+                        imageTempUri = FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".provider", imageFile);
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageTempUri);
                         appareilPhotoLauncher.launch(takePictureIntent);
                     } else {
                         Toast.makeText(getContext(), "Permission de la caméra refusée", Toast.LENGTH_SHORT).show();
@@ -245,11 +275,13 @@ public class CreationAvisRestaurantFragment extends Fragment {
         return !formElementNomUtilisateur.getText().toString().isEmpty() && !formElementCommentaire.getText().toString().isEmpty() && formElementNote != 0;
     }
 
-    private void displayPhotoButton(){
+    private void displayPhotoButtons(){
+        galerieButton.setVisibility(View.VISIBLE);
         appareilPhotoButton.setVisibility(View.VISIBLE);
     }
 
-    private void maskPhotoButton(){
+    private void maskPhotoButtons(){
+        galerieButton.setVisibility(View.GONE);
         appareilPhotoButton.setVisibility(View.GONE);
     }
 
@@ -384,6 +416,15 @@ public class CreationAvisRestaurantFragment extends Fragment {
         };
     }
 
+    private View.OnClickListener onClickGalerieButton(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                galerieLauncher.launch("image/*");
+            }
+        };
+    }
+
     private View.OnClickListener onClickAppareilPhotoButton(){
         return new View.OnClickListener() {
             @Override
@@ -393,6 +434,10 @@ public class CreationAvisRestaurantFragment extends Fragment {
                     requestCameraPermission();
                 } else {
                     Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    File cacheDir = getContext().getCacheDir();;
+                    File imageFile = new File(cacheDir, "temp_image" + UUID.randomUUID() + ".jpg");
+                    imageTempUri = FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".provider", imageFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageTempUri);
                     appareilPhotoLauncher.launch(takePictureIntent);
                 }
             }

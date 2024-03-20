@@ -163,6 +163,15 @@
                 app:layout_constraintTop_toBottomOf="@+id/labelPhotos" >
 
                 <Button
+                    android:id="@+id/galerie_photo_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/primary"
+                    android:layout_marginRight="10dp"
+                    android:text="Galerie"
+                    android:drawableRight="@drawable/ic_galerie"/>
+
+                <Button
                     android:id="@+id/appareil_photo_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
