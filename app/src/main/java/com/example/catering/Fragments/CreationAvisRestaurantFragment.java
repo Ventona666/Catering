@@ -2,6 +2,7 @@ package com.example.catering.Fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -80,6 +82,8 @@ public class CreationAvisRestaurantFragment extends Fragment {
     private Button appareilPhotoButton;
 
     private int nbPhotos;
+
+    private Uri imageTempUri;
 
     private ActivityResultLauncher<String> galerieLauncher;
 
@@ -194,40 +198,42 @@ public class CreationAvisRestaurantFragment extends Fragment {
     private void initGalerieLauncher(View view){
         galerieLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
                 resultUri -> {
-                    FilterEffectFragment filterEffectFragment = FilterEffectFragment.newInstance(resultUri, new FilterEffectFragment.OnFilterAppliedListener() {
-                        @Override
-                        public void onFilterApplied(Uri uri) {
-                            ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
-                            adapter.add(uri);
-                            nbPhotos++;
-                            setTextLabelPhotos(view);
-                            if(adapter.getListeImagesUri().size() > 1){
-                                maskPhotoButtons();
+                    if(resultUri != null){
+                        FilterEffectFragment filterEffectFragment = FilterEffectFragment.newInstance(resultUri, new FilterEffectFragment.OnFilterAppliedListener() {
+                            @Override
+                            public void onFilterApplied(Uri uri) {
+                                ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
+                                adapter.add(uri);
+                                nbPhotos++;
+                                setTextLabelPhotos(view);
+                                if(adapter.getListeImagesUri().size() > 1){
+                                    maskPhotoButtons();
+                                }
                             }
-                        }
-                    });
-                    filterEffectFragment.show(getChildFragmentManager(), "filter_dialog");
+                        });
+                        filterEffectFragment.show(getChildFragmentManager(), "filter_dialog");
+                    }
+
                 });
     }
 
     private void initAppareilPhotoLauncher(View view){
         appareilPhotoLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    Intent data = result.getData();
-                    if (data != null && data.getExtras() != null) {
-                        Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
-
-                        File cacheDir = getContext().getCacheDir();
-                        File imageFile = new File(cacheDir, "temp_image" + UUID.randomUUID() + ".jpg");
-                        saveBitmapToFile(imageBitmap, imageFile);
-
-                        ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
-                        adapter.add(Uri.fromFile(imageFile));
-                        nbPhotos++;
-                        setTextLabelPhotos(view);
-                        if (adapter.getListeImagesUri().size() > 1) {
-                            maskPhotoButtons();
-                        }
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        FilterEffectFragment filterEffectFragment = FilterEffectFragment.newInstance(imageTempUri, new FilterEffectFragment.OnFilterAppliedListener() {
+                            @Override
+                            public void onFilterApplied(Uri uri) {
+                                ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
+                                adapter.add(uri);
+                                nbPhotos++;
+                                setTextLabelPhotos(view);
+                                if(adapter.getListeImagesUri().size() > 1){
+                                    maskPhotoButtons();
+                                }
+                            }
+                        });
+                        filterEffectFragment.show(getChildFragmentManager(), "filter_dialog");
 
                     }
                 });
@@ -238,6 +244,10 @@ public class CreationAvisRestaurantFragment extends Fragment {
                 isGranted -> {
                     if (isGranted) {
                         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        File cacheDir = getContext().getCacheDir();;
+                        File imageFile = new File(cacheDir, "temp_image" + UUID.randomUUID() + ".jpg");
+                        imageTempUri = FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".provider", imageFile);
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageTempUri);
                         appareilPhotoLauncher.launch(takePictureIntent);
                     } else {
                         Toast.makeText(getContext(), "Permission de la caméra refusée", Toast.LENGTH_SHORT).show();
@@ -424,6 +434,10 @@ public class CreationAvisRestaurantFragment extends Fragment {
                     requestCameraPermission();
                 } else {
                     Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    File cacheDir = getContext().getCacheDir();;
+                    File imageFile = new File(cacheDir, "temp_image" + UUID.randomUUID() + ".jpg");
+                    imageTempUri = FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".provider", imageFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageTempUri);
                     appareilPhotoLauncher.launch(takePictureIntent);
                 }
             }

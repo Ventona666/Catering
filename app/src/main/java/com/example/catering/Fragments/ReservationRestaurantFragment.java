@@ -121,7 +121,7 @@ public class ReservationRestaurantFragment extends Fragment {
             firebaseService.createReservation(reservation, new DataCallBack<String>() {
                 @Override
                 public void onSuccess(String data) {
-                    utilsService.replaceFragment(getParentFragmentManager(), new RestaurantDetailFragment(restaurant));
+                    utilsService.replaceFragment(getParentFragmentManager(), new HomeFragment());
                     Log.d("Creation reservation", data);
                     Toast.makeText(getActivity().getApplicationContext(), "Réservation réussie", Toast.LENGTH_SHORT).show();
                 }

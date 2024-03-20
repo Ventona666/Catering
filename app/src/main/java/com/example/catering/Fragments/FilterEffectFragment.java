@@ -4,13 +4,13 @@ import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -24,29 +24,28 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 
+import com.bumptech.glide.Glide;
 import com.example.catering.R;
 import com.example.catering.Views.StickerView;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
 public class FilterEffectFragment extends DialogFragment implements SensorEventListener {
     private static final String ARG_IMAGE_URI = "image_uri";
 
-    private static final int STICKER_WIDTH = 140;
+    private static final int STICKER_WIDTH = 100;
 
-    private static final int STICKER_HEIGHT= 140;
+    private static final int STICKER_HEIGHT= 100;
     private Uri uri;
 
     private ImageView imageToFilter;
@@ -96,6 +95,7 @@ public class FilterEffectFragment extends DialogFragment implements SensorEventL
         View view = inflater.inflate(R.layout.fragment_filtre, container, false);
 
         imageToFilter = view.findViewById(R.id.imageToFilter);
+        imageToFilter.setImageURI(uri);
         radioGroup = view.findViewById(R.id.radioGroup);
         buttonCancel = view.findViewById(R.id.buttonCancel);
         buttonApply = view.findViewById(R.id.buttonApply);
@@ -156,11 +156,14 @@ public class FilterEffectFragment extends DialogFragment implements SensorEventL
         }
     }
 
-    public static Bitmap applyBrightness(Context context, Uri uri, float brightnessLevel) {
+    public Bitmap applyBrightness(Context context, Uri uri, float brightnessLevel) {
         Bitmap bitmap = null;
         try {
-            InputStream inputStream = context.getContentResolver().openInputStream(uri);
-            bitmap = BitmapFactory.decodeStream(inputStream);
+            Drawable originalDrawable = imageToFilter.getDrawable();
+
+            if (originalDrawable instanceof BitmapDrawable) {
+                bitmap = ((BitmapDrawable) originalDrawable).getBitmap().copy(Bitmap.Config.ARGB_8888, true);
+            }
 
             ColorMatrix colorMatrix = new ColorMatrix();
             colorMatrix.set(new float[] {
@@ -193,6 +196,9 @@ public class FilterEffectFragment extends DialogFragment implements SensorEventL
     @Override
     public void onSensorChanged(SensorEvent event) {
         System.out.println(event.values[0]);
+        Glide.with(getContext())
+                .load(uri)
+                .into(imageToFilter);
         if (event.sensor.getType() == Sensor.TYPE_LIGHT){
 
             Bitmap bitmap = applyBrightness(getContext(), uri, event.values[0]/10);
@@ -237,12 +243,18 @@ public class FilterEffectFragment extends DialogFragment implements SensorEventL
 
         canvas.drawBitmap(originalBitmap, 0, 0, null);
 
+        float scaleFactorX = (float) originalBitmap.getWidth() / imageToFilter.getWidth();
+        float scaleFactorY = (float) originalBitmap.getHeight() / imageToFilter.getHeight();
+
         List<Bitmap> stickersList = stickerView.getStickersList();
         List<PointF> stickerPositions = stickerView.getStickerPositions();
         for (int i = 0; i < stickersList.size(); i++) {
             Bitmap sticker = stickersList.get(i);
             PointF position = stickerPositions.get(i);
-            canvas.drawBitmap(sticker, position.x, position.y, null);
+            float scaledX = position.x * scaleFactorX;
+            float scaledY = position.y * scaleFactorY;
+            Bitmap scaledSticker = Bitmap.createScaledBitmap(sticker, (int) (sticker.getWidth() * scaleFactorX), (int) (sticker.getHeight() * scaleFactorX), true);
+            canvas.drawBitmap(scaledSticker, scaledX, scaledY, null);
         }
 
         return combinedBitmap;
