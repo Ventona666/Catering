@@ -123,12 +123,18 @@
         android:drawableRight="@drawable/ic_delete"
         android:text="Supprimer le dernier sticker" />
 
-    <LinearLayout
-        android:id="@+id/buttonsLayout"
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/boutonsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center">
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        app:alignContent="flex_start"
+        app:alignItems="center"
+        app:justifyContent="space_between"
+        android:layout_alignParentBottom="true">
 
         <Button
             android:id="@+id/buttonCancel"
@@ -144,6 +150,7 @@
             android:backgroundTint="@color/primary"
             android:text="Appliquer"/>
 
-    </LinearLayout>
+
+    </com.google.android.flexbox.FlexboxLayout>
 
 </RelativeLayout>

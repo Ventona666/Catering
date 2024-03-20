@@ -75,13 +75,9 @@ public class CreationAvisRestaurantFragment extends Fragment {
 
     private Button envoyerAvisButton;
 
-    private Button galerieButton;
-
     private Button appareilPhotoButton;
 
     private int nbPhotos;
-
-    private ActivityResultLauncher<String> galerieLauncher;
 
     private ActivityResultLauncher<Intent> appareilPhotoLauncher;
 
@@ -119,14 +115,12 @@ public class CreationAvisRestaurantFragment extends Fragment {
         nbPhotos = 0 ;
         formElementNomUtilisateur = view.findViewById(R.id.formNomUtilisateur);
         formElementCommentaire = view.findViewById(R.id.formCommentaire);
-        initGalerieLauncher(view);
         initAppareilPhotoLauncher(view);
         initRequestPermissionLauncher();
         setTextLabelPhotos(view);
 
         envoyerAvisButton = view.findViewById(R.id.envoyer_avis_button);
         envoyerAvisButton.setEnabled(false);
-        galerieButton = view.findViewById(R.id.galerie_photo_button);
         appareilPhotoButton = view.findViewById(R.id.appareil_photo_button);
 
         listeImageDeleteButton = view.findViewById(R.id.listImageDeleteButton);
@@ -141,7 +135,7 @@ public class CreationAvisRestaurantFragment extends Fragment {
                     nbPhotos--;
                     setTextLabelPhotos(view);
                     if(!adapter.getListeImagesUri().isEmpty()){
-                        displayPhotoButtons();
+                        displayPhotoButton();
                     }
                 }
 
@@ -155,7 +149,6 @@ public class CreationAvisRestaurantFragment extends Fragment {
         formElementCommentaire.addTextChangedListener(textWatcher);
 
         envoyerAvisButton.setOnClickListener(onClickEnvoyerAvisButton());
-        galerieButton.setOnClickListener(onClickGalerieButton());
         appareilPhotoButton.setOnClickListener(onClickAppareilPhotoButton());
 
         //Notes
@@ -191,25 +184,6 @@ public class CreationAvisRestaurantFragment extends Fragment {
         };
     }
 
-    private void initGalerieLauncher(View view){
-        galerieLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
-                resultUri -> {
-                    FilterEffectFragment filterEffectFragment = FilterEffectFragment.newInstance(resultUri, new FilterEffectFragment.OnFilterAppliedListener() {
-                        @Override
-                        public void onFilterApplied(Uri uri) {
-                            ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
-                            adapter.add(uri);
-                            nbPhotos++;
-                            setTextLabelPhotos(view);
-                            if(adapter.getListeImagesUri().size() > 1){
-                                maskPhotoButtons();
-                            }
-                        }
-                    });
-                    filterEffectFragment.show(getChildFragmentManager(), "filter_dialog");
-                });
-    }
-
     private void initAppareilPhotoLauncher(View view){
         appareilPhotoLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -229,7 +203,7 @@ public class CreationAvisRestaurantFragment extends Fragment {
                                 nbPhotos++;
                                 setTextLabelPhotos(view);
                                 if(adapter.getListeImagesUri().size() > 1){
-                                    maskPhotoButtons();
+                                    maskPhotoButton();
                                 }
                             }
                         });
@@ -271,13 +245,11 @@ public class CreationAvisRestaurantFragment extends Fragment {
         return !formElementNomUtilisateur.getText().toString().isEmpty() && !formElementCommentaire.getText().toString().isEmpty() && formElementNote != 0;
     }
 
-    private void displayPhotoButtons(){
-        galerieButton.setVisibility(View.VISIBLE);
+    private void displayPhotoButton(){
         appareilPhotoButton.setVisibility(View.VISIBLE);
     }
 
-    private void maskPhotoButtons(){
-        galerieButton.setVisibility(View.GONE);
+    private void maskPhotoButton(){
         appareilPhotoButton.setVisibility(View.GONE);
     }
 
@@ -408,15 +380,6 @@ public class CreationAvisRestaurantFragment extends Fragment {
                 formElementNote = note;
                 utilsService.updateStars(view, note);
                 envoyerAvisButton.setEnabled(getFormValidationValue());
-            }
-        };
-    }
-
-    private View.OnClickListener onClickGalerieButton(){
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                galerieLauncher.launch("image/*");
             }
         };
     }
