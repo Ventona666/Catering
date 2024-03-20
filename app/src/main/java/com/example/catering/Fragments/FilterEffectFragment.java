@@ -44,9 +44,9 @@ import java.util.UUID;
 public class FilterEffectFragment extends DialogFragment implements SensorEventListener {
     private static final String ARG_IMAGE_URI = "image_uri";
 
-    private static final int STICKER_WIDTH = 140;
+    private static final int STICKER_WIDTH = 100;
 
-    private static final int STICKER_HEIGHT= 140;
+    private static final int STICKER_HEIGHT= 100;
     private Uri uri;
 
     private ImageView imageToFilter;
@@ -237,12 +237,18 @@ public class FilterEffectFragment extends DialogFragment implements SensorEventL
 
         canvas.drawBitmap(originalBitmap, 0, 0, null);
 
+        float scaleFactorX = (float) originalBitmap.getWidth() / imageToFilter.getWidth();
+        float scaleFactorY = (float) originalBitmap.getHeight() / imageToFilter.getHeight();
+
         List<Bitmap> stickersList = stickerView.getStickersList();
         List<PointF> stickerPositions = stickerView.getStickerPositions();
         for (int i = 0; i < stickersList.size(); i++) {
             Bitmap sticker = stickersList.get(i);
             PointF position = stickerPositions.get(i);
-            canvas.drawBitmap(sticker, position.x, position.y, null);
+            float scaledX = position.x * scaleFactorX;
+            float scaledY = position.y * scaleFactorY;
+            Bitmap scaledSticker = Bitmap.createScaledBitmap(sticker, (int) (sticker.getWidth() * scaleFactorX), (int) (sticker.getHeight() * scaleFactorX), true);
+            canvas.drawBitmap(scaledSticker, scaledX, scaledY, null);
         }
 
         return combinedBitmap;

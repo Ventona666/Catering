@@ -221,13 +221,19 @@ public class CreationAvisRestaurantFragment extends Fragment {
                         File imageFile = new File(cacheDir, "temp_image" + UUID.randomUUID() + ".jpg");
                         saveBitmapToFile(imageBitmap, imageFile);
 
-                        ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
-                        adapter.add(Uri.fromFile(imageFile));
-                        nbPhotos++;
-                        setTextLabelPhotos(view);
-                        if (adapter.getListeImagesUri().size() > 1) {
-                            maskPhotoButtons();
-                        }
+                        FilterEffectFragment filterEffectFragment = FilterEffectFragment.newInstance(Uri.fromFile(imageFile), new FilterEffectFragment.OnFilterAppliedListener() {
+                            @Override
+                            public void onFilterApplied(Uri uri) {
+                                ListImageDeleteButtonAdapter adapter = (ListImageDeleteButtonAdapter) listeImageDeleteButton.getAdapter();
+                                adapter.add(uri);
+                                nbPhotos++;
+                                setTextLabelPhotos(view);
+                                if(adapter.getListeImagesUri().size() > 1){
+                                    maskPhotoButtons();
+                                }
+                            }
+                        });
+                        filterEffectFragment.show(getChildFragmentManager(), "filter_dialog");
 
                     }
                 });
