@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
@@ -47,7 +48,6 @@ public class FilterEffectFragment extends DialogFragment implements SensorEventL
 
     private static final int STICKER_HEIGHT= 100;
     private Uri uri;
-
     private ImageView imageToFilter;
     private RadioGroup radioGroup;
     private Button buttonCancel;
@@ -88,17 +88,20 @@ public class FilterEffectFragment extends DialogFragment implements SensorEventL
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         if (getArguments() != null) {
-            // Récupérer l'URI de l'image à partir des arguments
             uri = getArguments().getParcelable(ARG_IMAGE_URI);
         }
 
         View view = inflater.inflate(R.layout.fragment_filtre, container, false);
+
 
         imageToFilter = view.findViewById(R.id.imageToFilter);
         imageToFilter.setImageURI(uri);
         radioGroup = view.findViewById(R.id.radioGroup);
         buttonCancel = view.findViewById(R.id.buttonCancel);
         buttonApply = view.findViewById(R.id.buttonApply);
+
+        RadioButton radioButtonBrightness = view.findViewById(R.id.radioButtonBrightness);
+        radioButtonBrightness.setChecked(true);
 
         initStickers(view);
 
@@ -147,12 +150,15 @@ public class FilterEffectFragment extends DialogFragment implements SensorEventL
     }
 
     private void applyFilter() {
+        Glide.with(getContext()).load(uri).into(imageToFilter);
+        sensorManager.unregisterListener(this);
         int checkedRadioButtonId = radioGroup.getCheckedRadioButtonId();
-
         if (checkedRadioButtonId == R.id.radioButtonBrightness) {
             sensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
         } else if (checkedRadioButtonId == R.id.radioButtonSaturation) {
-            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
     }
 
@@ -190,7 +196,34 @@ public class FilterEffectFragment extends DialogFragment implements SensorEventL
         return null;
     }
 
-    private void applySaturationFilter() {
+    private Bitmap applySaturation(Context context, Uri uri, float saturationLevel) {
+        Bitmap bitmap = null;
+        try {
+            Drawable originalDrawable = imageToFilter.getDrawable();
+
+            if (originalDrawable instanceof BitmapDrawable) {
+                bitmap = ((BitmapDrawable) originalDrawable).getBitmap().copy(Bitmap.Config.ARGB_8888, true);
+            }
+
+
+            ColorMatrix colorMatrix = new ColorMatrix();
+            colorMatrix.setSaturation(saturationLevel);
+
+            Paint paint = new Paint();
+            paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
+
+            Bitmap resultBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(resultBitmap);
+            canvas.drawBitmap(bitmap, 0, 0, paint);
+
+            bitmap.recycle();
+
+            return resultBitmap;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     @Override
@@ -204,10 +237,10 @@ public class FilterEffectFragment extends DialogFragment implements SensorEventL
             Bitmap bitmap = applyBrightness(getContext(), uri, event.values[0]/10);
             imageToFilter.setImageBitmap(bitmap);
         }
-        else if (event.sensor.getType() == Sensor.TYPE_PROXIMITY){
+        else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE){
+            System.out.println(event.values[0]);
 
-
-            Bitmap bitmap = applyBrightness(getContext(), uri, event.values[0]);
+            Bitmap bitmap = applySaturation(getContext(), uri, event.values[0]*1000);
             imageToFilter.setImageBitmap(bitmap);
         }
     }
