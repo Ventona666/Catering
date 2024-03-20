@@ -19,20 +19,33 @@
         android:id="@+id/stickerView"
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:layout_centerHorizontal="true"
         android:layout_alignTop="@id/imageToFilter"
         android:layout_alignBottom="@id/imageToFilter"
         android:layout_alignLeft="@id/imageToFilter"
         android:layout_alignRight="@id/imageToFilter"/>
 
+    <TextView
+        android:id="@+id/labelFiltres"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:paddingLeft="15dp"
+        android:text="Filtres"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/primary"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_below="@id/imageToFilter"/>
 
     <RadioGroup
         android:id="@+id/radioGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_below="@id/imageToFilter">
+        android:layout_marginLeft="15dp"
+        android:layout_below="@id/labelFiltres">
 
         <RadioButton
             android:id="@+id/radioButtonBrightness"
@@ -114,8 +127,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/stickersContainer"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="10dp"
         android:layout_marginRight="15dp"

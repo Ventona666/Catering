@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Fragments.ReservationRestaurantFragment"
     android:orientation="vertical">
 
@@ -16,15 +17,22 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="@color/primary"
         android:textSize="25sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
+        android:id="@+id/libelle_reservation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:text="Réservation"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nom_restaurant_reservation"/>
 
     <EditText
         android:layout_width="match_parent"
@@ -34,7 +42,10 @@
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
         android:autofillHints="name"
-        android:inputType="text" />
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/libelle_reservation"/>
 
     <EditText
         android:layout_width="match_parent"
@@ -42,12 +53,18 @@
         android:hint="Prenom"
         android:id="@+id/prenom"
         android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp" />
+        android:layout_marginEnd="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nom"/>
 
     <CalendarView
         android:id="@+id/calendarViewReservation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/prenom"/>
 
     <TextView
         android:id="@+id/nb_personnes"
@@ -56,23 +73,34 @@
         android:layout_marginStart="15dp"
         android:text="Nombre de personnes :"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/calendarViewReservation"/>
 
     <Spinner
         android:id="@+id/spinnerNbPersonnes"
         android:layout_width="169dp"
         android:layout_height="55dp"
-        android:layout_marginStart="15dp" />
+        android:layout_marginStart="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nb_personnes"/>
 
     <Button
         android:id="@+id/buttonConfirmerReservation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
         android:backgroundTint="@color/primary"
         android:insetLeft="15dp"
         android:insetRight="15dp"
-        android:text="Confirmer la réservation" />
+        android:text="Confirmer la réservation"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinnerNbPersonnes"
+        app:layout_constraintVertical_bias="1.0" />
 
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
