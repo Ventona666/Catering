@@ -255,17 +255,6 @@ public class CreationAvisRestaurantFragment extends Fragment {
                 });
     }
 
-    private void saveBitmapToFile(Bitmap bitmap, File file) {
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            fos.flush();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void requestCameraPermission() {
         requestPermissionLauncher.launch(Manifest.permission.CAMERA);
     }

@@ -55,7 +55,7 @@ public class RestaurantDetailFragment extends Fragment {
         this.restaurant = restaurant;
     }
 
-    public static RestaurantDetailFragment newInstance(String param1, String param2, Restaurant restaurant) {
+    public static RestaurantDetailFragment newInstance(Restaurant restaurant) {
         RestaurantDetailFragment fragment = new RestaurantDetailFragment(restaurant);
         return fragment;
     }
